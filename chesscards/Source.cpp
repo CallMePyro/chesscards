@@ -40,7 +40,7 @@ int main()
 	cout << "Excellent! Nice to meet you " << name1 << ".\n"
 		<< "Now you must choose your deck with which to do battle.\n";
 	//cin >> deck1;
-	deck1 = "default.txt";
+	deck1 = "allinvalid.txt";
 
 	pstring name2, deck2;
 	cout << "Perfect! Now time for Player 2. Tell us, what is your name?\n";
@@ -55,7 +55,7 @@ int main()
 
 	cout << "Good, now you must tell me what deck you are using!\n";
 	//cin >> deck2;
-	deck2 = "default.txt";
+	deck2 = "allinvalid.txt";
 
 	Player p1( name1, WHITE, deck1 );
 	Player p2( name2, BLACK, deck2 );

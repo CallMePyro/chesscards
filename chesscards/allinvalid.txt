@@ -1,14 +1,13 @@
-//this deck will give you only invalid moves. I don't advice making a deck like this.
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
-rook n
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne
+king ne

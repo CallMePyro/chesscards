@@ -278,7 +278,7 @@ bool IsOpSide( SIDE s1, SIDE s2 )
 
 bool Chessboard::CanPieceMove( short row, short column, Card::SPEC dir ) const
 {
-	switch( dir )
+	switch( m_array[row][column].type )
 	{
 		case PAWN:
 			return CanMovePawn( row, column, 1, dir ) != SELF_NIL;
