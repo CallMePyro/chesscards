@@ -13,18 +13,17 @@
 		Support for Player vs Player or Player vs Computer modes
 */
 
-	void PlayGame();
+void PlayGame( Player & p1, Player & p2 );
 
 int main()
 {
-	/*
 	cout << "   _____ _                   " << '\n';
 	cout << "  / ____| |                  " << '\n';
 	cout << " | |    | |__   ___  ___ ___ " << '\n';
 	cout << " | |    | '_ \\ / _ \\/ __/ __|" << '\n';
 	cout << " | |____| | | |  __/\\__ \\__ \\" << '\n';
 	cout << "  \\_____|_| |_|\\___||___/___/" << '\n';
-	cout << "\t**The card game**\n";
+	cout << "\t**The card game**\n\n\n";
 
 	cout << "Welcome Player 1! Please enter your name.\n";
 	pstring name1, deck1;
@@ -47,7 +46,7 @@ int main()
 	cout << "Perfect! Now time for Player 2. Tell us, what is your name?\n";
 	do
 	{
-		cin >> name1;
+		cin >> name2;
 		cout << "You have selected " << name2 << " as your name, are you sure?(y/n)\n";
 		cin >> in;
 		if( tolower( in ) != 'y' )
@@ -60,17 +59,15 @@ int main()
 
 	Player p1( name1, WHITE, deck1 );
 	Player p2( name2, BLACK, deck2 );
-	*/
 
-	PlayGame();
+
+	PlayGame( p1, p2 );
 
 	return 0;
 }
 
-void PlayGame()
+void PlayGame( Player & p1, Player & p2 )
 {
-	Player p1( "Jacob", WHITE, "default.txt" );
-	Player p2( "Bob", BLACK, "default.txt" );
 
 	Chessboard cb;
 	pstring r; //just holds some random characters so they can switch turns

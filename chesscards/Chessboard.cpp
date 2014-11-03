@@ -523,7 +523,6 @@ void Chessboard::MovePawn( short row, short column, short dist, Card::SPEC dir )
 			m_array[row+1][column+1] = m_array[row][column]; break;
 		case Card::SW:
 			m_array[row+1][column-1] = m_array[row][column]; break;
-		default: throw 1; //Dunno how I could possibly get here but w/e
 	}
 }
 
@@ -539,7 +538,6 @@ void Chessboard::MoveRook( short row, short column, short dist, Card::SPEC dir )
 			m_array[row+dist][column] = m_array[row][column]; break;
 		case Card::W:
 			m_array[row][column-dist] = m_array[row][column]; break;
-		default: throw 1;
 	}
 }
 
@@ -563,7 +561,6 @@ void Chessboard::MoveKnight( short row, short column, Card::SPEC dir )
 			m_array[row-1][column-2] = m_array[row][column]; break;
 		case Card::NW: //up then left
 			m_array[row-2][column-1] = m_array[row][column]; break;
-		default: throw 1;
 	}
 }
 
@@ -579,7 +576,6 @@ void Chessboard::MoveBishop( short row, short column, short dist, Card::SPEC dir
 			m_array[row+dist][column+dist] = m_array[row][column]; break;
 		case Card::SW:
 			m_array[row+dist][column-dist] = m_array[row][column]; break;
-		default: throw 1;
 	}
 }
 
@@ -599,7 +595,6 @@ void Chessboard::MoveQueen( short row, short column, short dist, Card::SPEC dir 
 			m_array[row+dist][column+dist] = m_array[row][column]; break;
 		case Card::SW:
 			m_array[row+dist][column-dist] = m_array[row][column]; break;
-		default: throw 1;
 	}
 }
 
@@ -646,7 +641,7 @@ MOVE_RESULT Chessboard::CanMovePawn( short row, short column, short dist, Card::
 			if( IsOpSide( s, m_array[row+1][column-1].side ) )
 				return ENEMY;
 			return SELF_NIL;
-		default: throw 1;
+		default: return SELF_NIL;
 	}
 }
 
@@ -689,7 +684,7 @@ MOVE_RESULT Chessboard::CanMoveRook( short row, short column, short dist, Card::
 			if( s != m_array[row][column-dist].side )
 				return ENEMY;
 			return SELF_NIL;
-		default: throw 1;
+		default: return SELF_NIL;
 	}
 }
 
@@ -748,7 +743,7 @@ MOVE_RESULT Chessboard::CanMoveKnight( short row, short column, Card::SPEC dir )
 			if( s != m_array[row-2][column-1].side )
 				return ENEMY;
 			return SELF_NIL;
-		default: throw 1;
+		default: return SELF_NIL;
 	}
 }
 
@@ -791,7 +786,7 @@ MOVE_RESULT Chessboard::CanMoveBishop( short row, short column, short dist, Card
 			if( s != m_array[row+dist][column-dist].side )
 				return ENEMY;
 			return SELF_NIL;
-		default: throw 1;
+		default: return SELF_NIL;
 	}
 }
 
@@ -799,14 +794,10 @@ MOVE_RESULT Chessboard::CanMoveQueen( short row, short column, short dist, Card:
 {
 	switch( dir )
 	{
-		case Card::N:
-			return CanMoveRook( row, column, dist, dir );
-		case Card::S:
-			return CanMoveRook( row, column, dist, dir );
-		case Card::E: 
-			return CanMoveRook( row, column, dist, dir );
-		case Card::W:
-			return CanMoveRook( row, column, dist, dir );
+		case Card::N: return CanMoveRook( row, column, dist, dir );
+		case Card::S: return CanMoveRook( row, column, dist, dir );
+		case Card::E: return CanMoveRook( row, column, dist, dir );
+		case Card::W: return CanMoveRook( row, column, dist, dir );
 		default: return CanMoveBishop( row, column, dist, dir );
 	}
 }
