@@ -15,7 +15,6 @@ class Player
 {
 	public:
 		Player( pstring name, SIDE side, pstring deckpath );
-		void Turn();
 		pstring GetName() const { return m_name; }
 		SIDE GetSide() const { return m_side; }
 

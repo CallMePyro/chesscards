@@ -2,9 +2,9 @@
 #include "Player.h"
 #include <iostream>
 	using std::cout;
-	using std::wcout;
 #include <cstdlib>
 	using std::system;
+#include <tchar.h>
 
 /* Chess Cards
 	Description:
@@ -27,6 +27,7 @@ int main()
 	cout << "\t**The card game**\n\n\n";
 
 	cout << "Welcome Player 1! Please enter your name.\n";
+
 	pstring name1, deck1;
 	char in;
 	do
@@ -39,7 +40,8 @@ int main()
 	} while( tolower( in ) != 'y' );
 
 	cout << "Excellent! Nice to meet you " << name1 << ".\n"
-		<< "Now you must choose your deck with which to do battle.\n";
+		<< "Now you must choose your deck with which to do battle.\n";	
+
 	//cin >> deck1;
 	deck1 = "default.txt";
 
