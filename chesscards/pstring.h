@@ -222,6 +222,7 @@
 	using std::istream; //user for overloading the extraction operator
 #include <iostream>
 	using std::cout;
+
 class pstring
 {
 	public:
@@ -269,6 +270,8 @@ class pstring
 
 	bool pstring::operator != ( const pstring & rhs );
 	bool pstring::operator != ( const char * rhs );
+
+	bool pstring::operator !() { return !m_len; }
 
 	private:
 	void dealloc();
