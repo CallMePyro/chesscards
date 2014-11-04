@@ -6,6 +6,8 @@
 	using std::system;
 #include <tchar.h>
 
+	//hello jacob
+
 /* Chess Cards
 	Description:
 		Game of chess, but you can only takes moves that are in your deck of cards.
