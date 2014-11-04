@@ -6,7 +6,7 @@
 	using std::vector;
 #include "pstring.h"
 
-#define STARTING_CARDS 5
+#define STARTING_CARDS 7
 
 class Hand
 {

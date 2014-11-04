@@ -458,7 +458,7 @@ short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
 	}
 
 	if( max == 1 ) return 1;
-	cout << "You may move this piece between 1 and " << max << " squares.\nHow many squares would you like to move ite?\n";
+	cout << "You may move this piece between 1 and " << max << " squares.\nHow many squares would you like to move it?\n";
 
 	pstring input;
 	bool invalid = true;
