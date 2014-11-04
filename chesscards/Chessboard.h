@@ -6,6 +6,7 @@
 #include <iostream>
 	using std::cout;
 	using std::cin;
+#include <Windows.h>
 
 struct Piece //'Piece' barely looks like a word anymore
 {
@@ -16,9 +17,9 @@ struct Piece //'Piece' barely looks like a word anymore
 
 enum MOVE_RESULT
 {
-	SELF_NIL, //either self or out of bounds of the board
+	SELF_NIL, //either same team or out of bounds of the board
 	ENEMY, //moving onto enemy piece
-	EMPTY, //moving into empy square
+	EMPTY, //moving into empty square
 };
 
 class Chessboard
@@ -29,7 +30,7 @@ class Chessboard
 		void Move(Player & p);
 		bool IsValidMove( SIDE side, const Card & c ) const;
 		bool GameOver() const;
-		string ToString( SIDE s ) const;
+		pstring ToString( SIDE s ) const;
 
 		MOVE_RESULT CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const;
 		MOVE_RESULT CanMoveRook( short row, short column, short dist, Card::SPEC dir ) const;

@@ -1,7 +1,8 @@
-#include "Chessboard.h"
+﻿#include "Chessboard.h"
 #include "Player.h"
 #include <iostream>
 	using std::cout;
+	using std::wcout;
 #include <cstdlib>
 	using std::system;
 
@@ -40,7 +41,7 @@ int main()
 	cout << "Excellent! Nice to meet you " << name1 << ".\n"
 		<< "Now you must choose your deck with which to do battle.\n";
 	//cin >> deck1;
-	deck1 = "allinvalid.txt";
+	deck1 = "default.txt";
 
 	pstring name2, deck2;
 	cout << "Perfect! Now time for Player 2. Tell us, what is your name?\n";
@@ -55,7 +56,7 @@ int main()
 
 	cout << "Good, now you must tell me what deck you are using!\n";
 	//cin >> deck2;
-	deck2 = "allinvalid.txt";
+	deck2 = "default.txt";
 
 	Player p1( name1, WHITE, deck1 );
 	Player p2( name2, BLACK, deck2 );
@@ -70,7 +71,6 @@ void PlayGame( Player & p1, Player & p2 )
 {
 
 	Chessboard cb;
-	pstring r; //just holds some random characters so they can switch turns
 	while( !cb.GameOver() )
 	{
 		system( "CLS" ); //clear the screen
@@ -85,7 +85,7 @@ void PlayGame( Player & p1, Player & p2 )
 		system( "CLS" );
 
 		cout << p2.GetName() << "'s turn. Have them type something when they're ready to take their turn.\n";
-		cin >> r;
+		cin.get();
 
 		system( "CLS" ); //clear the screen
 		cout << cb.ToString( p2.GetSide() ); //print chessboard for player 2 orientation
@@ -98,8 +98,7 @@ void PlayGame( Player & p1, Player & p2 )
 		{
 			system( "CLS" );
 			cout << p1.GetName() << "'s turn. Have them type something when they're ready to take their turn.\n";
-			cin >> r;
-			r = "";
+			cin.get();
 		}
 	}
 }

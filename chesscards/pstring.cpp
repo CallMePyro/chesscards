@@ -46,6 +46,18 @@ pstring::pstring( const char * str ):m_string( nullptr ), m_len( 0 )
 		alloc( str );
 }
 
+pstring::pstring( int len, const char c ):m_string( nullptr ), m_len( 0 )
+{
+	if( len != 0 && c != 0 )
+	{
+		m_string = new char[len + 1];
+		m_len = len;
+		while( len-- )
+			m_string[len] = c;
+		m_string[m_len] = '\0';
+	}
+}
+
 /*****************************************************
 * Name: pstring( const pstring & o )
 *

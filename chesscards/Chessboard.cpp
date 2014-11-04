@@ -27,7 +27,7 @@ Chessboard::Chessboard()
 	m_array[0][2] = Piece( BISHOP, BLACK );
 	m_array[0][5] = Piece( BISHOP, BLACK );
 	m_array[7][2] = Piece( BISHOP, WHITE );
-	m_array[7][5] = Piece( BISHOP, WHITE ); 
+	m_array[7][5] = Piece( BISHOP, WHITE );
 	// Queen and King
 	m_array[0][3] = Piece( KING, BLACK );
 	m_array[0][4] = Piece( QUEEN, BLACK );
@@ -36,18 +36,20 @@ Chessboard::Chessboard()
 
 }
 
-inline char type_tostring( PIECE p )
+char type_tostring( Piece p )
 {
-	switch( p )
+	char center;
+	switch( p.type )
 	{
-		case PAWN: return 'p';
-		case ROOK: return 'r';
-		case KNIGHT: return 'k';
-		case BISHOP: return 'b';
-		case KING: return 'g';
-		case QUEEN: return 'q';
-		default: return char(254);
+		case PAWN: center = 'p'; break;
+		case ROOK: center = 'r'; break;
+		case KNIGHT: center = 'k'; break;
+		case BISHOP: center = 'b'; break;
+		case KING: center = 'g'; break;
+		case QUEEN: center = 'q'; break;
+		default: center = ' '; break;
 	}
+	return p.side == WHITE ? toupper( center ) : center;
 }
 
 char idx_to_row( short idx )
@@ -88,41 +90,65 @@ Card::SPEC InvertDir( Card::SPEC & s )
 	}
 }
 
-string Chessboard::ToString( SIDE side ) const
+pstring Chessboard::ToString( SIDE side ) const
 {
 	if( side == WHITE )
 	{
-		string str;
+		pstring str;
 		for( short row = 0; row < 8; ++row )
 		{
+			str += "    #################################################\n";
+			str += "    #     #     #     #     #     #     #     #     #\n";
 			str += idx_to_row( row );
-			str += "| "; //wow this is silly. Can't do these additions together because it's treated as pointer math instead of string concatenation.
+			str += "|  #"; //wow this is silly. Can't do these additions together because it's treated as pointer math instead of string concatenation.
 			//Holy hard to fix bug, batman. That one took me like 30 minutes.
 			//The worst part is that it still gives a valid result, as it gives a pointer to somewhere in the symbol table.
 			for( short column = 0; column < 8; ++column )
-				str += m_array[row][column].side == WHITE ? toupper( type_tostring( m_array[row][column].type ) ) : type_tostring( m_array[row][column].type );
-			str += '\n';
+			{
+				str += "  ";
+				str += type_tostring( m_array[row][column] );
+				str += "  #";
+			}
+
+			str += "\n    #     #     #     #     #     #     #     #     #\n";
 		}
-		str += "   ";
+		str += "    #################################################\n     ";
 		for( short column = 0; column < 8; ++column )
+		{
+			str += "  ";
 			str += idx_to_column( column );
+			str += "   ";
+		}
 		str += '\n';
 		return str;
 	}
 	else //side == BLACK
 	{ //print chessboard inverted for black side so they don't have to think upside down and backwards
-		string str;
+		pstring str;
 		for( short row = 7; row >= 0; --row )
 		{
+			str += "    #################################################\n";
+			str += "    #     #     #     #     #     #     #     #     #\n";
 			str += idx_to_row( row );
-			str += "| ";
-			for( short column = 0; column < 7; ++column )
-				str += m_array[row][column].side == WHITE ? toupper( type_tostring( m_array[row][column].type ) ) : type_tostring( m_array[row][column].type );
-			str += '\n';
+			str += "|  #"; //wow this is silly. Can't do these additions together because it's treated as pointer math instead of string concatenation.
+			//Holy hard to fix bug, batman. That one took me like 30 minutes.
+			//The worst part is that it still gives a valid result, as it gives a pointer to somewhere in the symbol table.
+			for( short column = 0; column < 8; ++column )
+			{
+				str += "  ";
+				str += type_tostring( m_array[row][column] );
+				str += "  #";
+			}
+
+			str += "\n    #     #     #     #     #     #     #     #     #\n";
 		}
-		str += "   ";
+		str += "    #################################################\n     ";
 		for( short column = 0; column < 8; ++column )
+		{
+			str += "  ";
 			str += idx_to_column( column );
+			str += "   ";
+		}
 		str += '\n';
 		return str;
 	}

@@ -228,6 +228,7 @@ class pstring
 	pstring();
 	pstring( const char c );
 	pstring( const char * c );
+	pstring( int len, const char c );
 	pstring( const pstring & s );
 
 	~pstring();
