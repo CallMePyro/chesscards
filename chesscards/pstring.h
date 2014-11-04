@@ -245,7 +245,7 @@ class pstring
 	unsigned length() const { return m_len; };
 	unsigned len() const { return m_len; };
 	char * begin() const { return m_string; };
-	char * end() const { return m_string + len(); };
+	char * end() const { return m_string + m_len; };
 
 	char pstring::operator [] ( unsigned i ) const; //retrieval
 	char pstring::operator [] ( int i ) const;
