@@ -4,7 +4,7 @@
 	using std::cout;
 #include <cstdlib>
 	using std::system;
-#include <tchar.h>
+#include <windows.h>
 
 /* Chess Cards
 	Description:
@@ -43,7 +43,7 @@ int main()
 		<< "Now you must choose your deck with which to do battle.\n";	
 
 	//cin >> deck1;
-	deck1 = "default.txt";
+	deck1 = "knights.txt";
 
 	pstring name2, deck2;
 	cout << "Perfect! Now time for Player 2. Tell us, what is your name?\n";
@@ -58,7 +58,7 @@ int main()
 
 	cout << "Good, now you must tell me what deck you are using!\n";
 	//cin >> deck2;
-	deck2 = "default.txt";
+	deck2 = "knights.txt";
 
 	Player p1( name1, WHITE, deck1 );
 	Player p2( name2, BLACK, deck2 );
@@ -78,6 +78,9 @@ void PlayGame( Player & p1, Player & p2 )
 		system( "CLS" ); //clear the screen
 		cout << cb.ToString( p1.GetSide() ); //print chessboard for player 1 orientation
 		cb.Move( p1 ); //Player 1 moves
+		system( "CLS" );
+		cout << cb.ToString( p1.GetSide() );
+		Sleep( 3500 );
 		if( cb.GameOver() )
 		{
 			cout << "Player 1 wins!\n";
@@ -86,12 +89,15 @@ void PlayGame( Player & p1, Player & p2 )
 
 		system( "CLS" );
 
-		cout << p2.GetName() << "'s turn. Have them type something when they're ready to take their turn.\n";
-		cin.get();
+		cout << p2.GetName() << "'s turn. ";
+		system( "PAUSE" );
 
 		system( "CLS" ); //clear the screen
 		cout << cb.ToString( p2.GetSide() ); //print chessboard for player 2 orientation
 		cb.Move( p2 ); //Player 2 moves
+		system( "CLS" );
+		cout << cb.ToString( p2.GetSide() );
+		Sleep( 3500 );
 		if( cb.GameOver() )
 		{
 			cout << "Player 2 wins!\n";
@@ -99,8 +105,8 @@ void PlayGame( Player & p1, Player & p2 )
 		else
 		{
 			system( "CLS" );
-			cout << p1.GetName() << "'s turn. Have them type something when they're ready to take their turn.\n";
-			cin.get();
+			cout << p1.GetName() << "'s turn. ";
+			system( "PAUSE" );
 		}
 	}
 }

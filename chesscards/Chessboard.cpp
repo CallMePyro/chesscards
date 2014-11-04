@@ -133,7 +133,7 @@ pstring Chessboard::ToString( SIDE side ) const
 			str += "|  #"; //wow this is silly. Can't do these additions together because it's treated as pointer math instead of string concatenation.
 			//Holy hard to fix bug, batman. That one took me like 30 minutes.
 			//The worst part is that it still gives a valid result, as it gives a pointer to somewhere in the symbol table.
-			for( short column = 0; column < 8; ++column )
+			for( short column = 7; column >= 0; --column )
 			{
 				str += "  ";
 				str += type_tostring( m_array[row][column] );
@@ -143,7 +143,7 @@ pstring Chessboard::ToString( SIDE side ) const
 			str += "\n    #     #     #     #     #     #     #     #     #\n";
 		}
 		str += "    #################################################\n     ";
-		for( short column = 0; column < 8; ++column )
+		for( short column = 7; column >= 0; --column )
 		{
 			str += "  ";
 			str += idx_to_column( column );
@@ -354,8 +354,8 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 				pos[0] = row;
 				pos[1] = column;
 
-				if( c.GetPiece() == KING || c.GetPiece() == QUEEN ) //if we know that there's only one of these pieces we can stop iterating
-					break;
+				//if( c.GetPiece() == KING || c.GetPiece() == QUEEN ) //if we know that there's only one of these pieces we can stop iterating
+					//break;
 			}
 		}
 	}
