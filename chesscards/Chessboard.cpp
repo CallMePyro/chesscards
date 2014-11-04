@@ -27,7 +27,7 @@ Chessboard::Chessboard()
 	m_array[0][2] = Piece( BISHOP, BLACK );
 	m_array[0][5] = Piece( BISHOP, BLACK );
 	m_array[7][2] = Piece( BISHOP, WHITE );
-	m_array[7][5] = Piece( BISHOP, WHITE );
+	m_array[7][5] = Piece( BISHOP, WHITE ); 
 	// Queen and King
 	m_array[0][3] = Piece( KING, BLACK );
 	m_array[0][4] = Piece( QUEEN, BLACK );
