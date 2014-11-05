@@ -6,6 +6,9 @@
 	using std::system;
 #include <fstream>
 	using std::ifstream;
+	using std::ofstream;
+	using std::ios;
+
 
 /* Chess Cards
 	Description:
@@ -44,21 +47,35 @@ int main()
 void MainMenu()
 {
 	pstring res;
-	cout << "**Main Menu**\n"
-		<< "1. Play Game\n"
-		<< "2. Create a custom deck.\n"
-		<< "3. See stats\n"
-		<< "4. Exit\n";
-	cin >> res;
 	do
 	{
+		cout << "**Main Menu**\n"
+			<< "1. Play Game\n"
+			<< "2. Create a custom deck.\n"
+			<< "3. See stats\n"
+			<< "4. Exit\n";
+		cin >> res;
 		switch( res[0] )
 		{
-			case '1': PlayerSelect(); break;
-			case '2': AddDeck(); break;
-			case '3': ViewStats();
-			case '4': cout << "Exiting...\n"; break;
-			default: cout << "Invalid option.\n";
+			case '1': 
+				system( "CLS" );
+				PlayerSelect(); 
+				break;
+			case '2':
+				system( "CLS" );
+				AddDeck();
+				break;
+			case '3':
+				system( "CLS" );
+				ViewStats();
+				break;
+			case '4': 
+				system( "CLS" ); 
+				break;
+			default: 
+				system( "CLS" );
+				cout << "Invalid option.\n";
+				break;
 		}
 	} while( res[0] != '4' );
 }
@@ -116,7 +133,7 @@ pstring SelectDeck()
 		cin >> name;
 		t.open( ( name + ".txt" ).begin() );
 
-		if( !t.is_open() || name == "decklist" )
+		if( !t.is_open() )
 		{
 			invalid = true;
 			cout << "Could not find deck named " << name << ".Please enter a valid deck name.\n";
@@ -172,5 +189,63 @@ void ViewStats()
 
 void AddDeck()
 {
+	cout << "Please enter a name for your deck.\n";
 
+	pstring name;
+	char in;
+	do
+	{
+		cin >> name;
+		cout << "You have selected " << name << " as the name for your deck, are you sure?(y/n)\n";
+		cin >> in;
+		if( tolower( in ) != 'y' )
+			cout << "No worries, simply type in the deck name again!\n";
+	} while( tolower( in ) != 'y' );
+
+	cout << "Now start adding cards! Simply type a card type and then direction and the card will be added to your deck.\n"
+		<< "Type 'done' when you're done adding cards to the deck.\n";
+
+	ifstream ifile( ( name + ".txt" ).begin() );
+	if( ifile.is_open() )
+	{
+		char c;
+		cout << "A file with the name " << name << " already exists. Are you sure you want to overwrite it?(y/n)\n";
+		cin >> c;
+		if( tolower( c ) != 'y' )
+		{
+			ifile.close();
+			system( "CLS" );
+			cout << "Deck has been finalized!\n";
+		}
+	}
+
+	ofstream decklist( "decklist.txt", ios::app );
+	decklist << name + '\n';
+	decklist.close();
+
+	ofstream file( ( name + ".txt" ).begin() );
+
+	pstring ptype, pdir;
+	while( cin >> ptype )
+	{
+		if( ptype.tolower() == "done" )
+			break;
+		cin >> pdir;
+
+		PIECE type = Deck::GetPiece( ptype );
+		Card::SPEC dir = Deck::GetSpec( pdir );
+
+		if( type == NOPIECE )
+			cout << "Invalid piece entered.\n";
+		else if( dir == Card::NOSPEC )
+			cout << "Invalid direction entered.\n";
+		else
+		{
+			cout << Card( type, dir ).ToString() << " has been added to your deck.\n";
+			file << ptype << ' ' << pdir << '\n';
+		}
+	}
+	system( "CLS" );
+	cout << "Deck has been finalized!\n";
+	file.close();
 }
