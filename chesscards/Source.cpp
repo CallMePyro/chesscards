@@ -43,7 +43,7 @@ int main()
 		<< "Now you must choose your deck with which to do battle.\n";	
 
 	//cin >> deck1;
-	deck1 = "knights.txt";
+	deck1 = "default.txt";
 
 	pstring name2, deck2;
 	cout << "Perfect! Now time for Player 2. Tell us, what is your name?\n";
@@ -58,7 +58,7 @@ int main()
 
 	cout << "Good, now you must tell me what deck you are using!\n";
 	//cin >> deck2;
-	deck2 = "knights.txt";
+	deck2 = "default.txt";
 
 	Player p1( name1, WHITE, deck1 );
 	Player p2( name2, BLACK, deck2 );
@@ -80,14 +80,11 @@ void PlayGame( Player & p1, Player & p2 )
 		cb.Move( p1 ); //Player 1 moves
 		system( "CLS" );
 		cout << cb.ToString( p1.GetSide() );
-		Sleep( 3500 );
 		if( cb.GameOver() )
 		{
 			cout << "Player 1 wins!\n";
 			break;
 		}
-
-		system( "CLS" );
 
 		cout << p2.GetName() << "'s turn. ";
 		system( "PAUSE" );
@@ -97,14 +94,12 @@ void PlayGame( Player & p1, Player & p2 )
 		cb.Move( p2 ); //Player 2 moves
 		system( "CLS" );
 		cout << cb.ToString( p2.GetSide() );
-		Sleep( 3500 );
 		if( cb.GameOver() )
 		{
 			cout << "Player 2 wins!\n";
 		}
 		else
 		{
-			system( "CLS" );
 			cout << p1.GetName() << "'s turn. ";
 			system( "PAUSE" );
 		}

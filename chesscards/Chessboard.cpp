@@ -43,9 +43,9 @@ char type_tostring( Piece p )
 	{
 		case PAWN: center = 'p'; break;
 		case ROOK: center = 'r'; break;
-		case KNIGHT: center = 'k'; break;
+		case KNIGHT: center = 'n'; break;
 		case BISHOP: center = 'b'; break;
-		case KING: center = 'g'; break;
+		case KING: center = 'k'; break;
 		case QUEEN: center = 'q'; break;
 		default: center = ' '; break;
 	}
@@ -130,9 +130,7 @@ pstring Chessboard::ToString( SIDE side ) const
 			str += "    #################################################\n";
 			str += "    #     #     #     #     #     #     #     #     #\n";
 			str += idx_to_row( row );
-			str += "|  #"; //wow this is silly. Can't do these additions together because it's treated as pointer math instead of string concatenation.
-			//Holy hard to fix bug, batman. That one took me like 30 minutes.
-			//The worst part is that it still gives a valid result, as it gives a pointer to somewhere in the symbol table.
+			str += "|  #";
 			for( short column = 7; column >= 0; --column )
 			{
 				str += "  ";
@@ -157,15 +155,15 @@ pstring Chessboard::ToString( SIDE side ) const
 bool Chessboard::GameOver() const
 {
 	short count = 0;
-	for( short row = 0; row < 7; ++row )
+	for( short row = 0; row < 8; ++row )
 	{
-		for( short column = 0; column < 7; ++column )
+		for( short column = 0; column < 8; ++column )
 		{
 			if( m_array[row][column].type == KING )
 				count++;
 		}
 	}
-	return count == 2; //if there's not two kings game is over
+	return count != 2; //if there's not two kings game is over
 }
 
 void Chessboard::Move( Player & ply )
@@ -344,18 +342,18 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 	short * pos = new short[2]; //this gets deleted by the calling function.
 	int count = 0;
 
-	for( short row = 0; row < 7; ++row ) //loop through pieces and count em.
+	for( short row = 0; row < 8; ++row ) //loop through pieces and count em.
 	{
-		for( short column = 0; column < 7; ++column )
+		for( short column = 0; column < 8; ++column )
 		{
 			if( m_array[row][column].type == c.GetPiece() && m_array[row][column].side == side )
 			{
-				++count;
+				count++;
 				pos[0] = row;
 				pos[1] = column;
 
-				//if( c.GetPiece() == KING || c.GetPiece() == QUEEN ) //if we know that there's only one of these pieces we can stop iterating
-					//break;
+				if( c.GetPiece() == KING || c.GetPiece() == QUEEN ) //if we know that there's only one of these pieces we can stop iterating
+					break;
 			}
 		}
 	}
@@ -442,7 +440,7 @@ void Chessboard::MovePiece( short row, short column, short dist, Card::SPEC dir 
 		case QUEEN: MoveQueen( row, column, dist, dir ); break;
 		case KING: MoveQueen( row, column, 1, dir ); break; //king moves same way as queen, just 1 space only
 	}
-	m_array[row][column] = Piece( NOPIECE, NOSIDE ); //empty square where the piece was
+	m_array[row][column] = Piece(); //empty square where the piece was
 }
 
 short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
