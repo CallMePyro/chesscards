@@ -1,27 +1,27 @@
 #include "Deck.h"
 
-Card::SPEC Deck::GetSpec( pstring & s)
+Card::SPEC Deck::GetSpec( pstring & s )
 {
 	//string to lowercase
-	for (auto & a : s )
-		a = tolower(a);
+	for( auto & a : s )
+		a = tolower( a );
 
 	//string to enum
-	if (s == "n")
+	if( s == "n" )
 		return Card::N;
-	else if (s == "ne")
+	else if( s == "ne" )
 		return Card::NE;
-	else if (s == "e")
+	else if( s == "e" )
 		return Card::E;
-	else if (s == "se")
+	else if( s == "se" )
 		return Card::SE;
-	else if (s == "s")
+	else if( s == "s" )
 		return Card::S;
-	else if (s == "sw")
+	else if( s == "sw" )
 		return Card::SW;
-	else if (s == "w")
+	else if( s == "w" )
 		return Card::W;
-	else if (s == "nw")
+	else if( s == "nw" )
 		return Card::NW;
 	else
 		return Card::NOSPEC;
@@ -87,8 +87,8 @@ void Deck::Shuffle()
 	}
 }
 
-void Deck::AddCard(Card c)
+void Deck::AddCard( Card c )
 {
 	//normally I'd inline these but doing this for more readability
-	m_cards.push_back(c);
+	m_cards.push_back( c );
 }

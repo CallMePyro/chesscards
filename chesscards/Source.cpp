@@ -8,6 +8,8 @@
 	using std::ifstream;
 	using std::ofstream;
 	using std::ios;
+#include <vector>
+	using std::vector;
 
 
 /* Chess Cards
@@ -24,6 +26,7 @@ void MainMenu();
 		pstring SelectDeck();
 		void PlayGame( Player & p1, Player & p2 );
 	void AddDeck();
+	void RemoveDeck();
 	void ViewStats();
 
 
@@ -51,7 +54,8 @@ void MainMenu()
 	{
 		cout << "**Main Menu**\n"
 			<< "1. Play Game\n"
-			<< "2. Create a custom deck.\n"
+			<< "2. Add a custom deck.\n"
+			<< "3. Delete a custom deck.\n"
 			<< "3. See stats\n"
 			<< "4. Exit\n";
 		cin >> res;
@@ -93,7 +97,7 @@ void PlayerSelect()
 
 	cout << "Excellent! Now on to Player 2. Please enter your name.\n";
 	pstring name2 = SelectName();
-	cout << "Good, now tell me what deck you are using " << name2 << "!\n";
+	cout << "Now tell me what deck you are using, " << name2 << ".\n";
 	pstring deck2 = SelectDeck();
 
 	Player p1( name1, WHITE, deck1 );
@@ -119,30 +123,49 @@ pstring SelectName()
 
 pstring SelectDeck()
 {
-	pstring name;
-	ifstream file( "decklist.txt" );
+	pstring input;
 	ifstream t;
 	bool invalid = true;
+	int idx = 0;
+	vector<pstring> opts;
 
-	while( file >> name ) //print out every file in the list
-		cout << '\t' << name << '\n';
+	ifstream decklist( "decklist.txt" );
+	while( decklist >> input ) //print out every file in the list
+	{
+		cout << '\t' << ++idx  << ". " << input << '\n';
+		opts.push_back( input );
+	}
+	decklist.close();
+
 	do
 	{
 		invalid = false;
 
-		cin >> name;
-		t.open( ( name + ".txt" ).begin() );
-
-		if( !t.is_open() )
+		cin >> input;
+		
+		if( input.is_numeric() )
 		{
-			invalid = true;
-			cout << "Could not find deck named " << name << ".Please enter a valid deck name.\n";
+			int res = input.to_int() - 1;
+			if( res > 0 && (unsigned)res < opts.size() )
+			{
+				system( "CLS" );
+				return opts[res] + ".txt";
+			}
+			else
+			{
+				invalid = true;
+				cout << "Please select a valid option.\n";
+			}
 		}
+		else
+		{
+			cout << "Please input a valid number.\n";
+			invalid = true;
+		}
+		
 
 	} while( invalid );
-
-	file.close();
-	return name + ".txt";
+	return "";
 }
 
 void PlayGame( Player & p1, Player & p2 )
@@ -158,7 +181,7 @@ void PlayGame( Player & p1, Player & p2 )
 		cout << cb.ToString( p1.GetSide() );
 		if( cb.GameOver() )
 		{
-			cout << "Player 1 wins!\n";
+			cout << p1.GetName() << " wins!\n";
 			break;
 		}
 
@@ -172,7 +195,7 @@ void PlayGame( Player & p1, Player & p2 )
 		cout << cb.ToString( p2.GetSide() );
 		if( cb.GameOver() )
 		{
-			cout << "Player 2 wins!\n";
+			cout << p2.GetName() << " wins!\n";
 		}
 		else
 		{
@@ -202,14 +225,11 @@ void AddDeck()
 			cout << "No worries, simply type in the deck name again!\n";
 	} while( tolower( in ) != 'y' );
 
-	cout << "Now start adding cards! Simply type a card type and then direction and the card will be added to your deck.\n"
-		<< "Type 'done' when you're done adding cards to the deck.\n";
-
 	ifstream ifile( ( name + ".txt" ).begin() );
 	if( ifile.is_open() )
 	{
 		char c;
-		cout << "A file with the name " << name << " already exists. Are you sure you want to overwrite it?(y/n)\n";
+		cout << "The deck " << name << " already exists. Are you sure you want to overwrite it?(y/n)\n";
 		cin >> c;
 		if( tolower( c ) != 'y' )
 		{
@@ -218,10 +238,15 @@ void AddDeck()
 			cout << "Deck has been finalized!\n";
 		}
 	}
+	else
+	{
+		ofstream decklist( "decklist.txt", ios::app );
+		decklist << name + '\n';
+		decklist.close();
+	}
 
-	ofstream decklist( "decklist.txt", ios::app );
-	decklist << name + '\n';
-	decklist.close();
+	cout << "Now start adding cards! Simply type a card type and then direction and the card will be added to your deck.\n"
+		<< "Type 'done' when you're done adding cards to the deck.\n";
 
 	ofstream file( ( name + ".txt" ).begin() );
 
@@ -248,4 +273,15 @@ void AddDeck()
 	system( "CLS" );
 	cout << "Deck has been finalized!\n";
 	file.close();
+}
+
+void RemoveDeck()
+{
+	bool deleted = false;
+
+
+
+	system( "CLS" );
+	if( deleted )
+		cout << "Deck has been deleted.\n";
 }
