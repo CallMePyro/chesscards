@@ -4,7 +4,8 @@
 	using std::cout;
 #include <cstdlib>
 	using std::system;
-#include <windows.h>
+#include <fstream>
+	using std::ifstream;
 
 /* Chess Cards
 	Description:
@@ -14,59 +15,117 @@
 		Support for Player vs Player or Player vs Computer modes
 */
 
-void PlayGame( Player & p1, Player & p2 );
+void MainMenu();
+	void PlayerSelect();
+		pstring SelectName();
+		pstring SelectDeck();
+		void PlayGame( Player & p1, Player & p2 );
+	void AddDeck();
+	void ViewStats();
+
 
 int main()
 {
-	cout << "   _____ _                   " << '\n';
-	cout << "  / ____| |                  " << '\n';
-	cout << " | |    | |__   ___  ___ ___ " << '\n';
-	cout << " | |    | '_ \\ / _ \\/ __/ __|" << '\n';
-	cout << " | |____| | | |  __/\\__ \\__ \\" << '\n';
-	cout << "  \\_____|_| |_|\\___||___/___/" << '\n';
-	cout << "\t**The card game**\n\n\n";
+	srand( NULL ); //SEED THE RAND!
 
+	cout << "   _____ _                   " << '\n'
+		 << "  / ____| |                  " << '\n'
+		 << " | |    | |__   ___  ___ ___ " << '\n'
+		 << " | |    | '_ \\ / _ \\/ __/ __|" << '\n'
+		 << " | |____| | | |  __/\\__ \\__ \\" << '\n'
+		 << "  \\_____|_| |_|\\___||___/___/" << '\n'
+			 << "\t**The card game**\n\n\n";
+
+	MainMenu();
+
+	return 0;
+}
+
+void MainMenu()
+{
+	pstring res;
+	cout << "**Main Menu**\n"
+		<< "1. Play Game\n"
+		<< "2. Create a custom deck.\n"
+		<< "3. See stats\n"
+		<< "4. Exit\n";
+	cin >> res;
+	do
+	{
+		switch( res[0] )
+		{
+			case '1': PlayerSelect(); break;
+			case '2': AddDeck(); break;
+			case '3': ViewStats();
+			case '4': cout << "Exiting...\n"; break;
+			default: cout << "Invalid option.\n";
+		}
+	} while( res[0] != '4' );
+}
+
+void PlayerSelect()
+{
 	cout << "Welcome Player 1! Please enter your name.\n";
 
-	pstring name1, deck1;
-	char in;
-	do
-	{
-		cin >> name1;
-		cout << "You have selected " << name1 << " as your name, are you sure?(y/n)\n";
-		cin >> in;
-		if( tolower( in ) != 'y' )
-			cout << "No worries, simply type in your name again!\n";
-	} while( tolower( in ) != 'y' );
+	pstring name1 = SelectName();
 
-	cout << "Excellent! Nice to meet you " << name1 << ".\n"
-		<< "Now you must choose your deck with which to do battle.\n";	
+	cout << "Nice to meet you " << name1 << "!\n"
+		<< "Now you must choose your deck with which to do battle.\n";
 
-	//cin >> deck1;
-	deck1 = "default.txt";
+	pstring deck1 = SelectDeck();
 
-	pstring name2, deck2;
-	cout << "Perfect! Now time for Player 2. Tell us, what is your name?\n";
-	do
-	{
-		cin >> name2;
-		cout << "You have selected " << name2 << " as your name, are you sure?(y/n)\n";
-		cin >> in;
-		if( tolower( in ) != 'y' )
-			cout << "No worries, simply type in your name again!\n";
-	} while( tolower( in ) != 'y' );
-
-	cout << "Good, now you must tell me what deck you are using!\n";
-	//cin >> deck2;
-	deck2 = "default.txt";
+	cout << "Excellent! Now on to Player 2. Please enter your name.\n";
+	pstring name2 = SelectName();
+	cout << "Good, now tell me what deck you are using " << name2 << "!\n";
+	pstring deck2 = SelectDeck();
 
 	Player p1( name1, WHITE, deck1 );
 	Player p2( name2, BLACK, deck2 );
 
-
 	PlayGame( p1, p2 );
+}
 
-	return 0;
+pstring SelectName()
+{
+	pstring name;
+	char in;
+	do
+	{
+		cin >> name;
+		cout << "You have selected " << name << " as your name, are you sure?(y/n)\n";
+		cin >> in;
+		if( tolower( in ) != 'y' )
+			cout << "No worries, simply type in your name again!\n";
+	} while( tolower( in ) != 'y' );
+	return name;
+}
+
+pstring SelectDeck()
+{
+	pstring name;
+	ifstream file( "decklist.txt" );
+	ifstream t;
+	bool invalid = true;
+
+	while( file >> name ) //print out every file in the list
+		cout << '\t' << name << '\n';
+	do
+	{
+		invalid = false;
+
+		cin >> name;
+		t.open( ( name + ".txt" ).begin() );
+
+		if( !t.is_open() || name == "decklist" )
+		{
+			invalid = true;
+			cout << "Could not find deck named " << name << ".Please enter a valid deck name.\n";
+		}
+
+	} while( invalid );
+
+	file.close();
+	return name + ".txt";
 }
 
 void PlayGame( Player & p1, Player & p2 )
@@ -104,4 +163,14 @@ void PlayGame( Player & p1, Player & p2 )
 			system( "PAUSE" );
 		}
 	}
+}
+
+void ViewStats()
+{
+
+}
+
+void AddDeck()
+{
+
 }

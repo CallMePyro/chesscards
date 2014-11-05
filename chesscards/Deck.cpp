@@ -1,24 +1,6 @@
 #include "Deck.h"
 
-vector<string> split_by_delim(const string & str, const char delim )
-{
-	vector<string> r;
-	int idx = 0;
-	r.push_back(string()); //start with empty string
-	for each(auto c in str)
-	{
-		if (c != delim)
-			r[idx] += c;
-		else
-		{
-			r.push_back(string());
-			idx++;
-		}
-	}
-	return r;
-}
-
-Card::SPEC Deck::GetSpec(string & s)
+Card::SPEC Deck::GetSpec( pstring & s)
 {
 	//string to lowercase
 	for (auto & a : s )
@@ -45,7 +27,7 @@ Card::SPEC Deck::GetSpec(string & s)
 		return Card::NOSPEC;
 }
 
-PIECE Deck::GetPiece( string & s )
+PIECE Deck::GetPiece( pstring & s )
 {
 	//string to lowercase
 	for( auto & a : s )
@@ -66,28 +48,21 @@ PIECE Deck::GetPiece( string & s )
 		return KING;
 	else
 		return NOPIECE;
-
 }
 
-Deck::Deck( const string & filepath )
+Deck::Deck( const pstring & filepath )
 {
-	//Load deck file as raw text
-	string file((istreambuf_iterator<char>(ifstream(filepath))), istreambuf_iterator<char>());
-
-	//Split deck file into lines
-	vector<string> lines = split_by_delim(file, '\n');
-	for each(auto line in lines)
+	pstring arg1, arg2;
+	ifstream file( filepath.begin() ); //open file
+	while( file >> arg1 >> arg2 ) //read each two chars
 	{
-		//Split each line into seperate words, then determine their effective enum, and create/insert
-		//a card into our vector
-		vector<string> words = split_by_delim(line, ' ');
-
-		PIECE pce = GetPiece( words[0] );
-		Card::SPEC spec = GetSpec( words[1] );
+		PIECE pce = GetPiece( arg1 );
+		Card::SPEC spec = GetSpec( arg2 );
 
 		if( pce != NOPIECE && spec != Card::NOSPEC ) //dont put invalid cards into the deck
 			m_cards.push_back( Card( pce, spec ) );
 	}
+	file.close();
 	Shuffle(); // shuffle dat
 }
 
@@ -100,9 +75,16 @@ Card Deck::Draw()
 
 void Deck::Shuffle()
 {
-	//using algorithm library. This is a much more reliable/faster shuffle than using rand
-	unsigned seed = system_clock::now().time_since_epoch().count();
-	shuffle( m_cards.begin(), m_cards.end(), default_random_engine( seed ) );
+	int i = 100;
+	while( i-- )
+	{
+		int rand1 = rand() % m_cards.size();
+		int rand2 = rand() % m_cards.size();
+
+		Card t = m_cards[rand1];
+		m_cards[rand1] = m_cards[rand2];
+		m_cards[rand2] = t;
+	}
 }
 
 void Deck::AddCard(Card c)

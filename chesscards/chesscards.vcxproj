@@ -100,6 +100,7 @@
     <Text Include="default.txt" />
     <Text Include="knights.txt" />
     <Text Include="allinvalid.txt" />
+    <Text Include="decklist.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

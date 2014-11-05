@@ -531,20 +531,29 @@ short Chessboard::QueenMoveDistance( short row, short column, Card::SPEC dir ) c
 
 void Chessboard::MovePawn( short row, short column, short dist, Card::SPEC dir )
 {
+	MoveQueen( row, column, dist, dir );
+}
+
+void Chessboard::MoveKnight( short row, short column, Card::SPEC dir )
+{
 	switch( dir )
 	{
-		case Card::N:
-			m_array[row-dist][column] = m_array[row][column]; break;
-		case Card::NW:
-			m_array[row-1][column-1] = m_array[row][column]; break;
-		case Card::NE:
-			m_array[row-1][column+1] = m_array[row][column]; break;
-		case Card::S:
-			m_array[row+dist][column] = m_array[row][column]; break;
-		case Card::SE:
-			m_array[row+1][column+1] = m_array[row][column]; break;
-		case Card::SW:
-			m_array[row+1][column-1] = m_array[row][column]; break;
+		case Card::N: //up then right
+			m_array[row - 2][column + 1] = m_array[row][column]; break;
+		case Card::NE: //right then up
+			m_array[row - 1][column + 2] = m_array[row][column]; break;
+		case Card::E: //right then down
+			m_array[row + 1][column + 2] = m_array[row][column]; break;
+		case Card::SE: //down then right
+			m_array[row + 2][column + 1] = m_array[row][column]; break;
+		case Card::S: //down then left
+			m_array[row + 2][column - 1] = m_array[row][column]; break;
+		case Card::SW: //left then down
+			m_array[row + 1][column - 2] = m_array[row][column]; break;
+		case Card::W: //left then up
+			m_array[row - 1][column - 2] = m_array[row][column]; break;
+		case Card::NW: //up then left
+			m_array[row - 2][column - 1] = m_array[row][column]; break;
 	}
 }
 
@@ -560,29 +569,6 @@ void Chessboard::MoveRook( short row, short column, short dist, Card::SPEC dir )
 			m_array[row+dist][column] = m_array[row][column]; break;
 		case Card::W:
 			m_array[row][column-dist] = m_array[row][column]; break;
-	}
-}
-
-void Chessboard::MoveKnight( short row, short column, Card::SPEC dir )
-{
-	switch( dir )
-	{
-		case Card::N: //up then right
-			m_array[row-2][column+1] = m_array[row][column]; break;
-		case Card::NE: //right then up
-			m_array[row-1][column+2] = m_array[row][column]; break;
-		case Card::E: //right then down
-			m_array[row+1][column+2] = m_array[row][column]; break;
-		case Card::SE: //down then right
-			m_array[row+2][column+1] = m_array[row][column]; break;
-		case Card::S: //down then left
-			m_array[row+2][column-1] = m_array[row][column]; break;
-		case Card::SW: //left then down
-			m_array[row+1][column-2] = m_array[row][column]; break;
-		case Card::W: //left then up
-			m_array[row-1][column-2] = m_array[row][column]; break;
-		case Card::NW: //up then left
-			m_array[row-2][column-1] = m_array[row][column]; break;
 	}
 }
 

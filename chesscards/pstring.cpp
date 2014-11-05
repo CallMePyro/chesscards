@@ -213,6 +213,25 @@ pstring & pstring::tolower()
 	return *this;
 }
 
+bool pstring::is_numeric()
+{
+	for each( char c in *this ) //oh baby all this syntax sugar is giving me a toothache
+		if( !isdigit( c ) && c != '.' )
+			return false;
+	return true;
+}
+
+int pstring::to_int()
+{
+	int res = 0;
+	for each( char c in *this ) //this will give awful input if the string is not numeric so use the 'is_numeric' first pls
+	{
+		if( c == '.' ) break;
+		res = res * 10 + ( c - '0' );
+	}
+	return res;
+}
+
 /*****************************************************
 * Name: dealloc()
 *

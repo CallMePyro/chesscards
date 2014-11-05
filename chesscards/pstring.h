@@ -241,6 +241,8 @@ class pstring
 	pstring & remove_char( const char c );
 	pstring & toupper();
 	pstring & tolower();
+	bool is_numeric();
+	int to_int();
 
 	unsigned length() const { return m_len; };
 	unsigned len() const { return m_len; };
