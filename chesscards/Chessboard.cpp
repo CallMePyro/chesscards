@@ -419,8 +419,6 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 			cout << "Invalid location selected.\n";
 		}
 
-		input = "";
-
 	} while( invalid );
 
 	return pos; //got a valid array location that holds a piece of the right type and side
@@ -608,17 +606,14 @@ void Chessboard::MoveQueen( short row, short column, short dist, Card::SPEC dir 
 	switch( dir )
 	{
 		case Card::N:
-			m_array[row-dist][column] = m_array[row][column]; break;
-		case Card::NW:
-			m_array[row-dist][column-dist] = m_array[row][column]; break;
-		case Card::NE:
-			m_array[row-dist][column+dist] = m_array[row][column]; break;
+			MoveRook( row, column, dist, dir ); break;
 		case Card::S:
-			m_array[row+dist][column] = m_array[row][column]; break;
-		case Card::SE:
-			m_array[row+dist][column+dist] = m_array[row][column]; break;
-		case Card::SW:
-			m_array[row+dist][column-dist] = m_array[row][column]; break;
+			MoveRook( row, column, dist, dir ); break;
+		case Card::E:
+			MoveRook( row, column, dist, dir ); break;
+		case Card::W:
+			MoveRook( row, column, dist, dir ); break;
+		default: MoveBishop( row, column, dist, dir );
 	}
 }
 
