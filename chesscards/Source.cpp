@@ -139,33 +139,28 @@ pstring SelectDeck()
 
 	do
 	{
-		invalid = false;
-
 		cin >> input;
-		
 		if( input.is_numeric() )
 		{
 			int res = input.to_int() - 1;
-			if( res > 0 && (unsigned)res < opts.size() )
+			if( res >= 0 && (unsigned)res < opts.size() )
 			{
 				system( "CLS" );
 				return opts[res] + ".txt";
 			}
 			else
 			{
-				invalid = true;
 				cout << "Please select a valid option.\n";
+				continue;
 			}
 		}
 		else
 		{
-			cout << "Please input a valid number.\n";
-			invalid = true;
+			cout << input << " Please input a valid number.\n";
+			continue;
 		}
-		
-
-	} while( invalid );
-	return "";
+	} while( true );
+	return input;
 }
 
 void PlayGame( Player & p1, Player & p2 )

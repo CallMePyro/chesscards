@@ -54,7 +54,7 @@ char type_tostring( Piece p )
 
 char idx_to_row( short idx )
 {
-	return ( 8-idx ) + '0';
+	return ( 8 - idx ) + '0';
 }
 
 short row_to_idx( char row )
@@ -65,13 +65,13 @@ short row_to_idx( char row )
 char idx_to_column( short idx )
 {
 	if( idx != 7 )
-		return ( ( 8*idx ) / 7 ) + 'a';
+		return ( ( 8 * idx ) / 7 ) + 'a';
 	else return 'h'; //darn integer division
 }
 
 short column_to_idx( char column )
 {
-	return ( ( 7*column ) / 8 ) - 84;
+	return ( ( 7 * column ) / 8 ) - 84;
 }
 
 Card::SPEC InvertDir( Card::SPEC & s )
@@ -215,39 +215,31 @@ void Chessboard::Move( Player & ply )
 	{
 		pstring input;
 		int result;
-		bool valid = false;
 		do
 		{
-			valid = true;
 			cin >> input;
 			if( input.len() != 1 )
 			{
-				valid = false;
 				cout << "Input too long. Input only one number.\n";
+				continue;
 			}
 			else if( !isdigit( input[0] ) )
 			{
-				valid = false;
 				cout << "Please input a number.\n";
+				continue;
 			}
 			result = input[0] - '0';
 			result--;
 
-			if( valid )
+			if( result < 0 || result >= idx || invalid[result] )
 			{
-				if( result < 0 || result >= idx || invalid[result] )
-				{
-					valid = false;
-					cout << "Invalid choice. Please choose another.\n";
-				}
-				else
-				{
-					valid = true;
-				}
+				cout << "Invalid choice. Please choose another.\n";
+				continue;
 			}
+			else break;
 
 
-		} while( !valid );
+		} while( true );
 
 		Card to_play = ply.GetHand().Play( result, ply.GetGraveyard() ); //puts card in graveyard then returns it so it can be affected to board
 		if( ply.GetDeck().IsEmpty() ) //if we're out of cards then return all graveyard to deck
@@ -272,25 +264,25 @@ void Chessboard::Move( Player & ply )
 					dist = GetDistance( pos[0], pos[1], dir );
 			}
 			MovePiece( pos[0], pos[1], dist, dir );
-			delete [] pos;
+			delete[] pos;
 		}
 		//these units don't have variable move distances, so we can ignore choosing move distance
 		else if( to_play.GetPiece() == KNIGHT || to_play.GetPiece() == KING )
 		{
 			short * pos = GetPiece( to_play, ply.GetSide() );
 			MovePiece( pos[0], pos[1], 1, dir );
-			delete [] pos;
+			delete[] pos;
 		}
 		else //every other unit we need to get their move distance once we choose the unit
 		{
 			short * pos = GetPiece( to_play, ply.GetSide() );
 			int dist = GetDistance( pos[0], pos[1], dir ); //get the number of units to move the piece
 			MovePiece( pos[0], pos[1], dist, dir );
-			delete [] pos;
+			delete[] pos;
 		}
 	}
 
-	delete [] invalid;
+	delete[] invalid;
 }
 
 bool IsOpSide( SIDE s1, SIDE s2 )
@@ -305,17 +297,17 @@ bool Chessboard::CanPieceMove( short row, short column, Card::SPEC dir ) const
 	switch( m_array[row][column].type )
 	{
 		case PAWN:
-			return CanMovePawn( row, column, 1, dir ) != SELF_NIL;
+			return CanMovePawn( row, column, 1, dir ) != OOB;
 		case ROOK:
-			return CanMoveRook( row, column, 1, dir ) != SELF_NIL;
+			return CanMoveRook( row, column, 1, dir ) != OOB;
 		case KNIGHT:
-			return CanMoveKnight( row, column, dir ) != SELF_NIL;
+			return CanMoveKnight( row, column, dir ) != OOB;
 		case BISHOP:
-			return CanMoveBishop( row, column, 1, dir ) != SELF_NIL;
+			return CanMoveBishop( row, column, 1, dir ) != OOB;
 		case QUEEN:
-			return CanMoveQueen( row, column, 1, dir ) != SELF_NIL;
+			return CanMoveQueen( row, column, 1, dir ) != OOB;
 		case KING:
-			return CanMoveQueen( row, column, 1, dir ) != SELF_NIL; //King has same movement pattern as Queen
+			return CanMoveQueen( row, column, 1, dir ) != OOB; //King has same movement pattern as Queen
 		default: return false;
 	}
 }
@@ -361,65 +353,62 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 	if( count == 1 ) //only one piece of our type then that's the only position we could use
 		return pos;
 
-	bool invalid = false;
 	pstring input;
 
 	cout << "Enter the column and row of the piece you'd like to move.\n";
 
 	do
 	{
-		invalid = false;
 		cin >> input;
 		input.tolower();
 
 		if( input.len() > 2 )
 		{
-			invalid = true;
 			cout << "Input is too long. Column must be between 'a' and 'h'. Row must be between '1' and '8'.\n";
+			continue;
 		}
 		else if( input.len() < 2 )
 		{
-			invalid = true;
 			cout << "Input is too short. Column must be between 'a' and 'h'. Row must be between '1' and '8'.\n";
+			continue;
 		}
 
-		if( !invalid && isdigit( input[0] ) && isalpha( input[1] ) ) //detect flipped input
+		if( isdigit( input[0] ) && isalpha( input[1] ) ) //detect flipped input
 		{
 			char t = input[0];
 			input[0] = input[1];
 			input[1] = t;
 		}
 
-		if( !invalid && input[0] >= 'a' && input[0] <= 'h' && input[1] >= '1' && input[1] <= '8' ) //have valid input up to this point
+		if( input[0] >= 'a' && input[0] <= 'h' && input[1] >= '1' && input[1] <= '8' ) //have valid input up to this point
 		{
 			pos[0] = row_to_idx( input[1] ); //flip em because chess notation says so
 			pos[1] = column_to_idx( input[0] );
 
 			if( m_array[pos[0]][pos[1]].side != side )
 			{
-				invalid = true;
 				cout << "You dont't own that piece!\n";
+				continue;
 			}
 			else if( m_array[pos[0]][pos[1]].type != c.GetPiece() )
 			{
-				invalid = true;
 				cout << "Wrong piece type selected.\n";
+				continue;
 			}
 			else if( !CanPieceMove( pos[0], pos[1], c.GetSpec() ) )
 			{
-				invalid = true;
 				cout << "You can't move that piece\n";
+				continue;
 			}
-			else
-				invalid = false;
+			else break;
 		}
 		else
 		{
-			invalid = true;
 			cout << "Invalid location selected.\n";
+			continue;
 		}
 
-	} while( invalid );
+	} while( true );
 
 	return pos; //got a valid array location that holds a piece of the right type and side
 }
@@ -447,9 +436,9 @@ short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
 
 	switch( m_array[row][column].type )
 	{
-		case PAWN: max = CanMovePawn( row, column, 2, dir ) != SELF_NIL ? 2 : 1; break;
+		case PAWN: max = CanMovePawn( row, column, 2, dir ) != OOB ? 2 : 1; break;
 		case ROOK: max = RookMoveDistance( row, column, dir ); break;
-		case BISHOP: max = BishopMoveDistance( row, column, dir); break;
+		case BISHOP: max = BishopMoveDistance( row, column, dir ); break;
 		case QUEEN: max = QueenMoveDistance( row, column, dir ); break;
 	}
 
@@ -457,7 +446,6 @@ short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
 	cout << "You may move this piece between 1 and " << max << " squares.\nHow many squares would you like to move it?\n";
 
 	pstring input;
-	bool invalid = true;
 
 	do
 	{
@@ -465,19 +453,19 @@ short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
 		if( input.len() != 1 )
 		{
 			cout << "Input too long.\n";
-			invalid = true;
+			continue;
 		}
 		else if( input[0] < '1' || input[0] > max + '0' )
 		{
 			cout << "Please enter a number between 1 and " << max << ".\n";
-			invalid = true;
+			continue;
 		}
 		else //good input
 		{
-			invalid = false;
 			max = input[0] - '0';
+			break;
 		}
-	} while( invalid );
+	} while( true );
 	return max;
 }
 
@@ -490,15 +478,15 @@ short Chessboard::RookMoveDistance( short row, short column, Card::SPEC dir ) co
 	short ret = 1; //we must be able to move atleast one square or we couldn't be here
 	for( short i = 2; i < 7; ++i )
 	{
-		MOVE_RESULT res = CanMoveRook( row, column, i, dir );
-		if( res == EMPTY )
+		PIECE res = CanMoveRook( row, column, i, dir );
+		if( res == NOPIECE ) //empty space
 			ret++; //add 1 and keep going
-		else if( res == ENEMY )
-			return ret+1; //add 1 and stop
+		else if( res != OOB ) //found an emey
+			return ret + 1; //add 1 and stop
 		else
 			return ret; //we can't go to this square, so stop at previous square
 	}
-	return ret;
+	return ret; //literally can never get here but compiler yells at me so whatever
 }
 
 short Chessboard::BishopMoveDistance( short row, short column, Card::SPEC dir ) const
@@ -506,10 +494,10 @@ short Chessboard::BishopMoveDistance( short row, short column, Card::SPEC dir ) 
 	short ret = 1;
 	for( short i = 2; i < 7; ++i )
 	{
-		MOVE_RESULT res = CanMoveBishop( row, column, i, dir );
-		if( res == EMPTY )
+		PIECE res = CanMoveBishop( row, column, i, dir );
+		if( res == NOPIECE )
 			ret++;
-		else if( res == ENEMY )
+		else if( res != OOB )
 			return ret + 1;
 		else
 			return ret;
@@ -562,13 +550,13 @@ void Chessboard::MoveRook( short row, short column, short dist, Card::SPEC dir )
 	switch( dir )
 	{
 		case Card::N:
-			m_array[row-dist][column] = m_array[row][column]; break;
+			m_array[row - dist][column] = m_array[row][column]; break;
 		case Card::E:
-			m_array[row][column+dist] = m_array[row][column]; break;
+			m_array[row][column + dist] = m_array[row][column]; break;
 		case Card::S:
-			m_array[row+dist][column] = m_array[row][column]; break;
+			m_array[row + dist][column] = m_array[row][column]; break;
 		case Card::W:
-			m_array[row][column-dist] = m_array[row][column]; break;
+			m_array[row][column - dist] = m_array[row][column]; break;
 	}
 }
 
@@ -577,13 +565,13 @@ void Chessboard::MoveBishop( short row, short column, short dist, Card::SPEC dir
 	switch( dir )
 	{
 		case Card::NW:
-			m_array[row-dist][column-dist] = m_array[row][column]; break;
+			m_array[row - dist][column - dist] = m_array[row][column]; break;
 		case Card::NE:
-			m_array[row-dist][column+dist] = m_array[row][column]; break;
+			m_array[row - dist][column + dist] = m_array[row][column]; break;
 		case Card::SE:
-			m_array[row+dist][column+dist] = m_array[row][column]; break;
+			m_array[row + dist][column + dist] = m_array[row][column]; break;
 		case Card::SW:
-			m_array[row+dist][column-dist] = m_array[row][column]; break;
+			m_array[row + dist][column - dist] = m_array[row][column]; break;
 	}
 }
 
@@ -603,54 +591,7 @@ void Chessboard::MoveQueen( short row, short column, short dist, Card::SPEC dir 
 	}
 }
 
-MOVE_RESULT Chessboard::CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const
-{
-	SIDE s = m_array[row][column].side;
-	if( s == BLACK )
-		dir = InvertDir( dir );
-	switch( dir )
-	{
-		case Card::N:
-			if( row - dist < 0 ) 
-				return SELF_NIL;
-			if( m_array[row-dist][column].side == NOSIDE ) //piece infront is empty
-				return EMPTY;
-			return SELF_NIL;
-		case Card::NW:
-			if( row == 0 || column == 0 )
-				return SELF_NIL;
-			if( IsOpSide( s, m_array[row-1][column-1].side ) )
-				return ENEMY;
-			return SELF_NIL;
-		case Card::NE:
-			if( row == 0 || column == 7 )
-				return SELF_NIL;
-			if( IsOpSide( s, m_array[row-1][column+1].side ) )
-				return ENEMY;
-			return SELF_NIL;
-		case Card::S:
-			if( row + dist > 7 )
-				return SELF_NIL;
-			if( m_array[row+dist][column].side == NOSIDE ) //if black side moves a pawn 'north' it becomes south, so we have to account for black side moves here
-				return EMPTY;
-			return SELF_NIL;
-		case Card::SE:
-			if( row == 7 || column == 7 )
-				return SELF_NIL;
-			if( IsOpSide( s, m_array[row+1][column+1].side ) )
-				return ENEMY;
-			return SELF_NIL;
-		case Card::SW:
-			if( row == 7 || column == 0 )
-				return SELF_NIL;
-			if( IsOpSide( s, m_array[row+1][column-1].side ) )
-				return ENEMY;
-			return SELF_NIL;
-		default: return SELF_NIL;
-	}
-}
-
-MOVE_RESULT Chessboard::CanMoveRook( short row, short column, short dist, Card::SPEC dir ) const
+PIECE Chessboard::CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
 	if( s == BLACK )
@@ -659,41 +600,80 @@ MOVE_RESULT Chessboard::CanMoveRook( short row, short column, short dist, Card::
 	{
 		case Card::N:
 			if( row - dist < 0 )
-				return SELF_NIL;
-			if( m_array[row-dist][column].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row-dist][column].side )
-				return ENEMY;
-			return SELF_NIL;
-		case Card::E:
-			if( column + dist > 7 )
-				return SELF_NIL;
-			if( m_array[row][column+dist].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row][column+dist].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( m_array[row - dist][column].side == NOSIDE ) //piece infront is empty
+				return NOPIECE;
+			return OOB;
+		case Card::NW:
+			if( row == 0 || column == 0 )
+				return OOB;
+			if( IsOpSide( s, m_array[row - 1][column - 1].side ) )
+				return m_array[row - 1][column - 1].type;
+			return OOB;
+		case Card::NE:
+			if( row == 0 || column == 7 )
+				return OOB;
+			if( IsOpSide( s, m_array[row - 1][column + 1].side ) )
+				return m_array[row - 1][column + 1].type;
+			return OOB;
 		case Card::S:
-			if( row + dist > 7 ) 
-				return SELF_NIL;
-			if( m_array[row+dist][column].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row+dist][column].side )
-				return ENEMY;
-			return SELF_NIL;
-		case Card::W:
-			if( column - dist < 0 )
-				return SELF_NIL;
-			if( m_array[row][column-dist].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row][column-dist].side )
-				return ENEMY;
-			return SELF_NIL;
-		default: return SELF_NIL;
+			if( row + dist > 7 )
+				return OOB;
+			if( m_array[row + dist][column].side == NOSIDE ) //if black side moves a pawn 'north' it becomes south, so we have to account for black side moves here
+				return NOPIECE;
+			return OOB;
+		case Card::SE:
+			if( row == 7 || column == 7 )
+				return OOB;
+			if( IsOpSide( s, m_array[row + 1][column + 1].side ) )
+				return m_array[row + 1][column + 1].type;
+			return OOB;
+		case Card::SW:
+			if( row == 7 || column == 0 )
+				return OOB;
+			if( IsOpSide( s, m_array[row + 1][column - 1].side ) )
+				return m_array[row + 1][column - 1].type;
+			return OOB;
+		default: return OOB;
 	}
 }
 
-MOVE_RESULT Chessboard::CanMoveKnight( short row, short column, Card::SPEC dir ) const
+PIECE Chessboard::CanMoveRook( short row, short column, short dist, Card::SPEC dir ) const
+{
+	SIDE s = m_array[row][column].side;
+	if( s == BLACK )
+		dir = InvertDir( dir );
+	switch( dir )
+	{
+		case Card::N:
+			if( row - dist < 0 )
+				return OOB;
+			if( s != m_array[row - dist][column].side )
+				return m_array[row - dist][column].type;
+			return OOB;
+		case Card::E:
+			if( column + dist > 7 )
+				return OOB;
+			if( s != m_array[row][column + dist].side )
+				return m_array[row][column + dist].type;
+			return OOB;
+		case Card::S:
+			if( row + dist > 7 )
+				return OOB;
+			if( s != m_array[row + dist][column].side )
+				return m_array[row + dist][column].type;
+			return OOB;
+		case Card::W:
+			if( column - dist < 0 )
+				return OOB;
+			if( s != m_array[row][column - dist].side )
+				return m_array[row][column - dist].type;
+			return OOB;
+		default: return OOB;
+	}
+}
+
+PIECE Chessboard::CanMoveKnight( short row, short column, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
 	if( s == BLACK )
@@ -702,57 +682,57 @@ MOVE_RESULT Chessboard::CanMoveKnight( short row, short column, Card::SPEC dir )
 	{
 		case Card::N: //up then right
 			if( row < 2 || column == 7 )
-				return SELF_NIL;
-			if( s != m_array[row-2][column+1].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row - 2][column + 1].side )
+				return m_array[row - 2][column + 1].type;
+			return OOB;
 		case Card::NE: //right then up
 			if( row == 0 || column > 5 )
-				return SELF_NIL;
-			if( s != m_array[row-1][column+2].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row - 1][column + 2].side )
+				return m_array[row - 1][column + 2].type;
+			return OOB;
 		case Card::E: //right then down
 			if( row == 7 || column > 5 )
-				return SELF_NIL;
-			if( s != m_array[row+1][column+2].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row + 1][column + 2].side )
+				return m_array[row + 1][column + 2].type;
+			return OOB;
 		case Card::SE: //down then right
 			if( row > 5 || column == 7 )
-				return SELF_NIL;
-			if( s != m_array[row+2][column+1].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row + 2][column + 1].side )
+				return m_array[row + 2][column + 1].type;
+			return OOB;
 		case Card::S: //down then left
 			if( row > 5 || column == 0 )
-				return SELF_NIL;
-			if( s != m_array[row+2][column-1].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row + 2][column - 1].side )
+				return m_array[row + 2][column + 1].type;
+			return OOB;
 		case Card::SW: //left then down
 			if( row == 7 || column < 2 )
-				return SELF_NIL;
-			if( s != m_array[row+1][column-2].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row + 1][column - 2].side )
+				return m_array[row + 1][column - 2].type;
+			return OOB;
 		case Card::W: //left then up
 			if( row == 0 || column < 2 )
-				return SELF_NIL;
-			if( s != m_array[row-1][column-2].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row - 1][column - 2].side )
+				return m_array[row - 1][column - 2].type;
+			return OOB;
 		case Card::NW: //up then left
 			if( row < 2 || column == 0 )
-				return SELF_NIL;
-			if( s != m_array[row-2][column-1].side )
-				return ENEMY;
-			return SELF_NIL;
-		default: return SELF_NIL;
+				return OOB;
+			if( s != m_array[row - 2][column - 1].side )
+				return m_array[row - 2][column - 1].type;
+			return OOB;
+		default: return OOB;
 	}
 }
 
-MOVE_RESULT Chessboard::CanMoveBishop( short row, short column, short dist, Card::SPEC dir ) const
+PIECE Chessboard::CanMoveBishop( short row, short column, short dist, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
 	if( s == BLACK )
@@ -761,41 +741,33 @@ MOVE_RESULT Chessboard::CanMoveBishop( short row, short column, short dist, Card
 	{
 		case Card::NW:
 			if( row - dist < 0 || column - dist < 0 )
-				return SELF_NIL;
-			if( m_array[row-dist][column-dist].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row-dist][column-dist].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row - dist][column - dist].side )
+				return m_array[row - dist][column - dist].type;
+			return OOB;
 		case Card::NE:
 			if( row - dist < 0 || column + dist > 7 )
-				return SELF_NIL;
-			if( m_array[row-dist][column+dist].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row-dist][column+dist].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row - dist][column + dist].side )
+				return m_array[row - dist][column + dist].type;
+			return OOB;
 		case Card::SE:
 			if( row + dist > 7 || column + dist > 7 )
-				return SELF_NIL;
-			if( m_array[row+dist][column+dist].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row+dist][column+dist].side )
-				return ENEMY;
-			return SELF_NIL;
+				return OOB;
+			if( s != m_array[row + dist][column + dist].side )
+				return m_array[row + dist][column + dist].type;
+			return OOB;
 		case Card::SW:
 			if( row + dist > 7 || column - dist < 0 )
-				return SELF_NIL;
-			if( m_array[row+dist][column-dist].side == NOSIDE )
-				return EMPTY;
-			if( s != m_array[row+dist][column-dist].side )
-				return ENEMY;
-			return SELF_NIL;
-		default: return SELF_NIL;
+				return OOB;
+			if( s != m_array[row + dist][column - dist].side )
+				return m_array[row + dist][column - dist].type;
+			return OOB;
+		default: return OOB;
 	}
 }
 
-MOVE_RESULT Chessboard::CanMoveQueen( short row, short column, short dist, Card::SPEC dir ) const
+PIECE Chessboard::CanMoveQueen( short row, short column, short dist, Card::SPEC dir ) const
 {
 	switch( dir )
 	{

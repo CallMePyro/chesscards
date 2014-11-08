@@ -216,7 +216,7 @@ pstring & pstring::tolower()
 bool pstring::is_numeric()
 {
 	for each( char c in *this ) //oh baby all this syntax sugar is giving me a toothache
-		if( !isdigit( c ) && c != '.' )
+		if( !(isdigit( c ) || c == '.' ) )
 			return false;
 	return true;
 }

@@ -3,6 +3,7 @@
 
 enum PIECE
 {
+	OOB, //Out of bounds
 	NOPIECE,
 	PAWN,
 	ROOK,

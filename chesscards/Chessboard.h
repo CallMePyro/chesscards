@@ -15,13 +15,6 @@ struct Piece //'Piece' barely looks like a word anymore
 	Piece( PIECE t = PIECE::NOPIECE, SIDE s = SIDE::NOSIDE ):type( t ), side( s ) {} //default constructor
 };
 
-enum MOVE_RESULT
-{
-	SELF_NIL, //either same team or out of bounds of the board
-	ENEMY, //moving onto enemy piece
-	EMPTY, //moving into empty square
-};
-
 class Chessboard
 {
 	public:
@@ -32,11 +25,11 @@ class Chessboard
 		bool GameOver() const;
 		pstring ToString( SIDE s ) const;
 
-		MOVE_RESULT CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const;
-		MOVE_RESULT CanMoveRook( short row, short column, short dist, Card::SPEC dir ) const;
-		MOVE_RESULT CanMoveKnight( short row, short column, Card::SPEC dir ) const;
-		MOVE_RESULT CanMoveBishop( short row, short column, short dist, Card::SPEC dir ) const;
-		MOVE_RESULT CanMoveQueen( short row, short column, short dist, Card::SPEC dir ) const;
+		PIECE CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const;
+		PIECE CanMoveRook( short row, short column, short dist, Card::SPEC dir ) const;
+		PIECE CanMoveKnight( short row, short column, Card::SPEC dir ) const;
+		PIECE CanMoveBishop( short row, short column, short dist, Card::SPEC dir ) const;
+		PIECE CanMoveQueen( short row, short column, short dist, Card::SPEC dir ) const;
 
 		void MovePawn( short row, short column, short dist, Card::SPEC dir );
 		void MoveRook( short row, short column, short dist, Card::SPEC dir );
