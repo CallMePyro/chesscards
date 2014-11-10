@@ -152,25 +152,11 @@ pstring Chessboard::ToString( SIDE side ) const
 	}
 }
 
-bool Chessboard::GameOver() const
-{
-	short count = 0;
-	for( short row = 0; row < 8; ++row )
-	{
-		for( short column = 0; column < 8; ++column )
-		{
-			if( m_array[row][column].type == KING )
-				count++;
-		}
-	}
-	return count != 2; //if there's not two kings game is over
-}
-
-void Chessboard::Move( Player & ply )
+void Chessboard::MoveHuman( Player & ply )
 {
 	int idx = 0;
 	bool * invalid = new bool[ply.GetHand().GetCards().size()]; //keep track of which cards are invalid
-	bool all_invalid = true;
+	bool all_invalid = true; //set to false if any non-valid piece is found
 	for each( Card card in ply.GetHand().GetCards() )
 	{
 		if( !IsValidMove( ply.GetSide(), card ) )
@@ -188,16 +174,33 @@ void Chessboard::Move( Player & ply )
 
 	if( all_invalid )
 	{
-		cout << "Since you can't play any cards, select a card to discard and draw another.\n";
+		pstring input;
 		int result;
+		cout << "Since you can't play any cards, select a card to discard and draw another.\n";
 		do
 		{
-			cin >> result;
-			result--;
-			if( result < 0 || result > idx )
-				cout << "Invalid choice. Please choose another.\n";
+			cin >> input;
+			if( input.is_numeric() )
+			{
+				result = input.to_int() - 1;
+				if( result >= 0 && (unsigned)result < ply.GetHand().GetCards().size() )
+				{
+					break; //we've got valid input, break out of loop
+				}
+				else
+				{
+					cout << "Please enter a number between 1 and " << idx << ".\n";
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Please enter a valid number.\n";
+				continue;
+			}
 
-		} while( result < 0 || result > idx );
+		} while( true );
+
 		ply.GetHand().Play( result, ply.GetGraveyard() ); //put card in graveyard
 
 		if( ply.GetDeck().IsEmpty() ) //if we're out of cards then return all graveyard to deck
@@ -208,8 +211,8 @@ void Chessboard::Move( Player & ply )
 		ply.GetHand().Draw( ply.GetDeck() ); //get new card;
 
 		system( "CLS" ); //redraw game
-		cout << this->ToString( ply.GetSide() );
-		this->Move( ply ); //move again
+		cout << ToString( ply.GetSide() );
+		Move( ply ); //move again
 	}
 	else
 	{
@@ -263,6 +266,10 @@ void Chessboard::Move( Player & ply )
 				if( dir == Card::N || dir == Card::S ) //not taking a piece diagonally
 					dist = GetDistance( pos[0], pos[1], dir );
 			}
+
+			if( PieceMoveResult( pos[0], pos[1], dist, dir ) == KING )
+				m_end = true;
+
 			MovePiece( pos[0], pos[1], dist, dir );
 			delete[] pos;
 		}
@@ -270,6 +277,10 @@ void Chessboard::Move( Player & ply )
 		else if( to_play.GetPiece() == KNIGHT || to_play.GetPiece() == KING )
 		{
 			short * pos = GetPiece( to_play, ply.GetSide() );
+
+			if( PieceMoveResult( pos[0], pos[1], 1, dir ) == KING )
+				m_end = true;
+
 			MovePiece( pos[0], pos[1], 1, dir );
 			delete[] pos;
 		}
@@ -277,12 +288,64 @@ void Chessboard::Move( Player & ply )
 		{
 			short * pos = GetPiece( to_play, ply.GetSide() );
 			int dist = GetDistance( pos[0], pos[1], dir ); //get the number of units to move the piece
+
+			if( PieceMoveResult( pos[0], pos[1], dist, dir ) == KING )
+				m_end = true;
+
 			MovePiece( pos[0], pos[1], dist, dir );
 			delete[] pos;
 		}
 	}
-
 	delete[] invalid;
+}
+
+void Chessboard::MoveAI( Player & ply )
+{
+	PIECE best_kill = NOPIECE;
+	short pos[2] = { 0 };
+	Card::SPEC to_use;
+	int kill_dist = 0;
+	for each( Card card in ply.GetHand().GetCards() )
+	{
+		if( IsValidMove( ply.GetSide(), card ) ) //for each valid card
+		{
+			for( short row = 0; row < 8; ++row )
+			{
+				for( short column = 0; column < 8; ++column )
+				{
+					if( m_array[row][column].side == ply.GetSide() && m_array[row][column].type == card.GetPiece() ) //for each piece of ours of the same type
+					{
+						int dist = GetPieceMaxDist( row, column, card.GetSpec() );
+						PIECE kill = PieceMoveResult( row, column, dist, card.GetSpec() );
+						if( kill > best_kill )
+						{
+							best_kill = kill;
+							to_use = card.GetSpec();
+							pos[0] = row;
+							pos[1] = column;
+							kill_dist = dist;
+							if( kill == KING )
+								break;
+						}
+					}
+				}
+			}
+		}
+	}
+	if( best_kill != NOPIECE )
+		MovePiece( pos[0], pos[1], kill_dist, to_use );
+	else
+	{
+
+	}
+}
+
+void Chessboard::Move( Player & ply )
+{
+	if( ply.IsAI() )
+		MoveAI( ply );
+	else
+		MoveHuman( ply );
 }
 
 bool IsOpSide( SIDE s1, SIDE s2 )
@@ -292,23 +355,23 @@ bool IsOpSide( SIDE s1, SIDE s2 )
 	else return false;
 }
 
-bool Chessboard::CanPieceMove( short row, short column, Card::SPEC dir ) const
+PIECE Chessboard::PieceMoveResult ( short row, short column, short dist, Card::SPEC dir ) const
 {
 	switch( m_array[row][column].type )
 	{
 		case PAWN:
-			return CanMovePawn( row, column, 1, dir ) != OOB;
+			return CanMovePawn( row, column, dist, dir );
 		case ROOK:
-			return CanMoveRook( row, column, 1, dir ) != OOB;
+			return CanMoveRook( row, column, dist, dir );
 		case KNIGHT:
-			return CanMoveKnight( row, column, dir ) != OOB;
+			return CanMoveKnight( row, column, dir );
 		case BISHOP:
-			return CanMoveBishop( row, column, 1, dir ) != OOB;
+			return CanMoveBishop( row, column, dist, dir );
 		case QUEEN:
-			return CanMoveQueen( row, column, 1, dir ) != OOB;
+			return CanMoveQueen( row, column, dist, dir );
 		case KING:
-			return CanMoveQueen( row, column, 1, dir ) != OOB; //King has same movement pattern as Queen
-		default: return false;
+			return CanMoveQueen( row, column, dist, dir ); //King has same movement pattern as Queen
+		default: return OOB;
 	}
 }
 
@@ -321,7 +384,7 @@ bool Chessboard::IsValidMove( SIDE side, const Card & c ) const
 			const Piece & pce = m_array[row][column]; //make the code look a bit nicer
 			if( side == pce.side && pce.type == c.GetPiece() )
 			{
-				if( CanPieceMove( row, column, c.GetSpec() ) )
+				if( PieceMoveResult( row, column, 1, c.GetSpec() ) != OOB )
 					return true;
 			}
 		}
@@ -385,7 +448,12 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 			pos[0] = row_to_idx( input[1] ); //flip em because chess notation says so
 			pos[1] = column_to_idx( input[0] );
 
-			if( m_array[pos[0]][pos[1]].side != side )
+			if( m_array[pos[0]][pos[1]].side == NOSIDE )
+			{
+				cout << "That's an empty square.\n";
+				continue;
+			}
+			else if( m_array[pos[0]][pos[1]].side != side )
 			{
 				cout << "You dont't own that piece!\n";
 				continue;
@@ -395,7 +463,7 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 				cout << "Wrong piece type selected.\n";
 				continue;
 			}
-			else if( !CanPieceMove( pos[0], pos[1], c.GetSpec() ) )
+			else if( PieceMoveResult( pos[0], pos[1], 1, c.GetSpec() ) == OOB )
 			{
 				cout << "You can't move that piece\n";
 				continue;
@@ -418,6 +486,9 @@ void Chessboard::MovePiece( short row, short column, short dist, Card::SPEC dir 
 	if( m_array[row][column].side == BLACK )
 		dir = InvertDir( dir );
 
+	if( PieceMoveResult( row, column, dist, dir ) == KING )
+		m_end = true;
+
 	switch( m_array[row][column].type )
 	{
 		case PAWN: MovePawn( row, column, dist, dir ); break;
@@ -430,20 +501,28 @@ void Chessboard::MovePiece( short row, short column, short dist, Card::SPEC dir 
 	m_array[row][column] = Piece(); //empty square where the piece was
 }
 
-short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
+short Chessboard::GetPieceMaxDist( short row, short column, Card::SPEC dir ) const
 {
-	short max = 1;
-
 	switch( m_array[row][column].type )
 	{
-		case PAWN: max = CanMovePawn( row, column, 2, dir ) != OOB ? 2 : 1; break;
-		case ROOK: max = RookMoveDistance( row, column, dir ); break;
-		case BISHOP: max = BishopMoveDistance( row, column, dir ); break;
-		case QUEEN: max = QueenMoveDistance( row, column, dir ); break;
+		case PAWN:
+			if( ( m_array[row][column].side == BLACK && row == 1 ) || ( m_array[row][column].side == WHITE && row == 6 ) )
+				if( dir == Card::N || dir == Card::S ) //not taking a piece diagonally
+					return CanMovePawn( row, column, 2, dir ) != OOB ? 2 : 1;
+			else return 1;
+		case ROOK: return RookMoveDistance( row, column, dir );
+		case BISHOP: return BishopMoveDistance( row, column, dir );
+		case QUEEN: return QueenMoveDistance( row, column, dir );
+		default: return -1;
 	}
+}
 
-	if( max == 1 ) return 1;
-	cout << "You may move this piece between 1 and " << max << " squares.\nHow many squares would you like to move it?\n";
+short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
+{
+	short max = GetPieceMaxDist( row, column, dir );
+	if( max == 1 ) return 1; //dont bother asking if they have no choices
+
+	cout << "You may move this piece " << ( max == 2 ? "either 1 or " : "between 1 and " ) << max << " squares.\nHow many squares would you like to move it?\n";
 
 	pstring input;
 
@@ -577,18 +656,10 @@ void Chessboard::MoveBishop( short row, short column, short dist, Card::SPEC dir
 
 void Chessboard::MoveQueen( short row, short column, short dist, Card::SPEC dir )
 {
-	switch( dir )
-	{
-		case Card::N:
-			MoveRook( row, column, dist, dir ); break;
-		case Card::S:
-			MoveRook( row, column, dist, dir ); break;
-		case Card::E:
-			MoveRook( row, column, dist, dir ); break;
-		case Card::W:
-			MoveRook( row, column, dist, dir ); break;
-		default: MoveBishop( row, column, dist, dir );
-	}
+	if( dir == Card::N || dir == Card::S || dir == Card::E || dir == Card::W )
+		MoveRook( row, column, dist, dir );
+	else
+		MoveBishop( row, column, dist, dir );
 }
 
 PIECE Chessboard::CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const
@@ -769,12 +840,8 @@ PIECE Chessboard::CanMoveBishop( short row, short column, short dist, Card::SPEC
 
 PIECE Chessboard::CanMoveQueen( short row, short column, short dist, Card::SPEC dir ) const
 {
-	switch( dir )
-	{
-		case Card::N: return CanMoveRook( row, column, dist, dir );
-		case Card::S: return CanMoveRook( row, column, dist, dir );
-		case Card::E: return CanMoveRook( row, column, dist, dir );
-		case Card::W: return CanMoveRook( row, column, dist, dir );
-		default: return CanMoveBishop( row, column, dist, dir );
-	}
+	if( dir == Card::N || dir == Card::S || dir == Card::E || dir == Card::W )
+		return CanMoveRook( row, column, dist, dir );
+	else
+		return CanMoveBishop( row, column, dist, dir );
 }
