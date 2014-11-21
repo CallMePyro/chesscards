@@ -1,8 +1,7 @@
 #pragma once
 #include "Card.h"
 #include "Deck.h"
-#include <vector>
-	using std::vector;
+#include "pvector.h"
 class Graveyard
 {
 	public:
@@ -11,5 +10,5 @@ class Graveyard
 		bool IsEmpty() { return !m_cards.size(); }
 		void AddCard(Card c);
 	private:
-		vector<Card> m_cards;
+		pvector<Card> m_cards;
 };

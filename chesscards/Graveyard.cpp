@@ -14,5 +14,5 @@ void Graveyard::ReturnToDeck(Deck & deck)
 {
 	for each(auto card in m_cards)
 		deck.AddCard(card);
-	m_cards.erase( m_cards.begin(), m_cards.end() ); //empty array
+	m_cards.empty();
 }

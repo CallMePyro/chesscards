@@ -14,7 +14,7 @@ void Hand::Draw(Deck & deck)
 Card Hand::Play( int idx, Graveyard & g )
 {
 	Card t = m_cards[idx]; //cache card
-	m_cards.erase( m_cards.begin()+idx ); //delete card
+	m_cards.remove( idx ); //delete card
 	g.AddCard( t ); //add to graveyard
 	return t; //return card to be effected on chessboard
 }

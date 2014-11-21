@@ -8,8 +8,7 @@
 	using std::ifstream;
 	using std::ofstream;
 	using std::ios;
-#include <vector>
-	using std::vector;
+#include "pvector.h"
 
 
 /* Chess Cards
@@ -127,7 +126,7 @@ pstring SelectDeck()
 	ifstream t;
 	bool invalid = true;
 	int idx = 0;
-	vector<pstring> opts;
+	pvector<pstring> opts;
 
 	ifstream decklist( "decklist.txt" );
 	while( decklist >> input ) //print out every file in the list

@@ -68,9 +68,7 @@ Deck::Deck( const pstring & filepath )
 
 Card Deck::Draw()
 {
-	Card t = m_cards.back(); //cache last idx
-	m_cards.pop_back(); //remove from array
-	return t; //return cached card
+	return m_cards.pop_back(); //remove from array and return card removed
 }
 
 void Deck::Shuffle()

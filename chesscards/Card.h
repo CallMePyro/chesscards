@@ -29,7 +29,7 @@ class Card
 			NW, //North West
 		};
 
-		Card( PIECE p, SPEC s );
+		Card( PIECE p = NOPIECE, SPEC s = Card::NOSPEC );
 		pstring ToString() const;
 		PIECE GetPiece() const { return m_piece; }
 		SPEC GetSpec() const { return m_spec; }

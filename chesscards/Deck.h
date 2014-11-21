@@ -2,19 +2,18 @@
 #include "Card.h"
 #include <fstream>
 	using std::ifstream;
-#include <vector>
-	using std::vector; //used for storing cards.
+#include "pvector.h"
 
 class Deck
 {
 	public:
 		Deck( const pstring & deckpath );
 		Card Draw();
-		bool IsEmpty() { return !m_cards.size(); } //size is 0
+		bool IsEmpty() { return m_cards.empty(); }
 		void Shuffle();
 		void AddCard(Card c);
 		static PIECE GetPiece( pstring & s);
 		static Card::SPEC GetSpec( pstring & s);
 	private:
-		vector<Card> m_cards;
+		pvector<Card> m_cards;
 };

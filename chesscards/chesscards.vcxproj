@@ -85,6 +85,7 @@
     <ClCompile Include="Hand.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="pstring.cpp" />
+    <ClCompile Include="pvector.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +96,7 @@
     <ClInclude Include="Hand.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="pstring.h" />
+    <ClInclude Include="pvector.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="default.txt" />
