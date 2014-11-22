@@ -1,5 +1,1 @@
 default
-knights
-allinvalid
-bob
-tim

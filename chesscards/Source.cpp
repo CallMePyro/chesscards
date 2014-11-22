@@ -54,9 +54,7 @@ void MainMenu()
 		cout << "**Main Menu**\n"
 			<< "1. Play Game\n"
 			<< "2. Add a custom deck.\n"
-			<< "3. Delete a custom deck.\n"
-			<< "3. See stats\n"
-			<< "4. Exit\n";
+			<< "3. Exit\n";
 		cin >> res;
 		switch( res[0] )
 		{
@@ -69,18 +67,13 @@ void MainMenu()
 				AddDeck();
 				break;
 			case '3':
-				system( "CLS" );
-				ViewStats();
-				break;
-			case '4': 
-				system( "CLS" ); 
-				break;
+				exit( 0 ); //oh baby
 			default: 
 				system( "CLS" );
 				cout << "Invalid option.\n";
 				break;
 		}
-	} while( res[0] != '4' );
+	} while( true );
 }
 
 void PlayerSelect()
@@ -99,8 +92,8 @@ void PlayerSelect()
 	cout << "Now tell me what deck you are using, " << name2 << ".\n";
 	pstring deck2 = SelectDeck();
 
-	Player p1( name1, WHITE, deck1 );
-	Player p2( name2, BLACK, deck2 );
+	Player p1( name1, WHITE, deck1, name1.tolower() == "ai" );
+	Player p2( name2, BLACK, deck2, name2.tolower() == "ai" );
 
 	PlayGame( p1, p2 );
 }
@@ -199,11 +192,6 @@ void PlayGame( Player & p1, Player & p2 )
 	}
 }
 
-void ViewStats()
-{
-
-}
-
 void AddDeck()
 {
 	cout << "Please enter a name for your deck.\n";
@@ -267,15 +255,4 @@ void AddDeck()
 	system( "CLS" );
 	cout << "Deck has been finalized!\n";
 	file.close();
-}
-
-void RemoveDeck()
-{
-	bool deleted = false;
-
-
-
-	system( "CLS" );
-	if( deleted )
-		cout << "Deck has been deleted.\n";
 }

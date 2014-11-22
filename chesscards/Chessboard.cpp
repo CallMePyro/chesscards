@@ -301,6 +301,7 @@ void Chessboard::MoveHuman( Player & ply )
 
 void Chessboard::MoveAI( Player & ply )
 {
+	bool all_invalid = true;
 	PIECE best_kill = NOPIECE;
 	short pos[2] = { 0 };
 	Card::SPEC to_use;
@@ -309,6 +310,7 @@ void Chessboard::MoveAI( Player & ply )
 	{
 		if( IsValidMove( ply.GetSide(), card ) ) //for each valid card
 		{
+			all_invalid = false;
 			for( short row = 0; row < 8; ++row )
 			{
 				for( short column = 0; column < 8; ++column )
@@ -332,11 +334,42 @@ void Chessboard::MoveAI( Player & ply )
 			}
 		}
 	}
-	if( best_kill != NOPIECE )
+	if( best_kill != NOPIECE ) //we can make a kill
 		MovePiece( pos[0], pos[1], kill_dist, to_use );
-	else
+	else if( all_invalid )
 	{
+		ply.GetHand().Play( rand() % ply.GetHand().GetCards().size(), ply.GetGraveyard() ); //put random card in graveyard
 
+		if( ply.GetDeck().IsEmpty() ) //if we're out of cards then return all graveyard to deck
+		{
+			ply.GetGraveyard().ReturnToDeck( ply.GetDeck() );
+			ply.GetDeck().Shuffle();
+		}
+		ply.GetHand().Draw( ply.GetDeck() ); //get new card;
+		Move( ply ); //move again
+	}
+	else //no kill moves but there are cards we can play
+	{
+		for each( Card card in ply.GetHand().GetCards() )
+		{
+			for( short row = 0; row < 8; ++row )
+			{
+				for( short column = 0; column < 8; ++column )
+				{
+					if( m_array[row][column].side == ply.GetSide() && m_array[row][column].type == card.GetPiece() )
+					{
+						if( PieceMoveResult( row, column, 1, card.GetSpec() ) != OOB )
+						{
+							if( card.GetPiece() == KNIGHT )
+								MovePiece( row, column, 1, card.GetSpec() );
+							else
+								MovePiece( row, column, GetPieceMaxDist( row, column, card.GetSpec() ), card.GetSpec() ); //move is as far as possible cuz lazy AI
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

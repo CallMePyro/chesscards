@@ -85,7 +85,6 @@
     <ClCompile Include="Hand.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="pstring.cpp" />
-    <ClCompile Include="pvector.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,8 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="default.txt" />
-    <Text Include="knights.txt" />
-    <Text Include="allinvalid.txt" />
     <Text Include="decklist.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

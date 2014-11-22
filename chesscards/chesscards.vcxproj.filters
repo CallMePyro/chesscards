@@ -39,9 +39,6 @@
     <ClCompile Include="Chessboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pvector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -71,12 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="default.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="knights.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="allinvalid.txt">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="decklist.txt">
