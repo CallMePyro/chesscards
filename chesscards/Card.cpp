@@ -4,6 +4,7 @@ Card::Card( PIECE p, Card::SPEC s ): m_piece( p ), m_spec( s )
 {
 }
 
+//convert a PIECE enum to a string
 inline pstring piece_tostring( PIECE p )
 {
 	switch( p )
@@ -19,6 +20,7 @@ inline pstring piece_tostring( PIECE p )
 	}
 }
 
+//convert a SPEC enum to a string
 inline pstring spec_tostring( Card::SPEC s )
 {
 	switch( s )
@@ -31,12 +33,11 @@ inline pstring spec_tostring( Card::SPEC s )
 		case Card::SW: return "South-West";
 		case Card::W: return "West";
 		case Card::NW: return "North-West";
-		default:
-			cout << s;
-			return "oh lord help something broke";
+		default: return "oh lord help something broke";
 	}
 }
 
+//ToString a card
 pstring Card::ToString() const
 {
 	return piece_tostring( m_piece ) + spec_tostring( m_spec );

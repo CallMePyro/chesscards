@@ -6,6 +6,7 @@
 
 //	[8,0]			[8,8]
 
+//initial construciton of board.
 Chessboard::Chessboard()
 {
 	for( int i = 0; i < 8; ++i ) //pawns
@@ -36,6 +37,7 @@ Chessboard::Chessboard()
 
 }
 
+//Take a piece struct and convert it to a character
 char type_tostring( Piece p )
 {
 	char center;
@@ -49,31 +51,32 @@ char type_tostring( Piece p )
 		case QUEEN: center = 'q'; break;
 		default: center = ' '; break;
 	}
-	return p.side == WHITE ? toupper( center ) : center;
+	return p.side == WHITE ? toupper( center ) : center; //uppercase if white side
 }
 
-char idx_to_row( short idx )
+char idx_to_row( short idx ) //convert row index to character
 {
 	return ( 8 - idx ) + '0';
 }
 
-short row_to_idx( char row )
+short row_to_idx( char row ) //character to row index
 {
 	return 8 - ( row - '0' );
 }
 
-char idx_to_column( short idx )
+char idx_to_column( short idx ) //convert column index to character
 {
 	if( idx != 7 )
 		return ( ( 8 * idx ) / 7 ) + 'a';
 	else return 'h'; //darn integer division
 }
 
-short column_to_idx( char column )
+short column_to_idx( char column ) //convert user input to column index
 {
 	return ( ( 7 * column ) / 8 ) - 84;
 }
 
+//invert a SPEC enum to be the opposite direction. This is used for black side moves to preserve orientation.
 Card::SPEC InvertDir( Card::SPEC & s )
 {
 	switch( s )
@@ -90,6 +93,7 @@ Card::SPEC InvertDir( Card::SPEC & s )
 	}
 }
 
+//convert a board to a string, based on the SIDE enum passed. Black side views inverted and upside down
 pstring Chessboard::ToString( SIDE side ) const
 {
 	if( side == WHITE )
@@ -152,6 +156,8 @@ pstring Chessboard::ToString( SIDE side ) const
 	}
 }
 
+//This function handles moving a human player. It queries which piece to move, how far to move that piece, and then moves it.
+//It also handles all exceptions and edge cases.
 void Chessboard::MoveHuman( Player & ply )
 {
 	int idx = 0;
@@ -299,6 +305,8 @@ void Chessboard::MoveHuman( Player & ply )
 	delete[] invalid;
 }
 
+//This code handles moving AI
+//It kills the most powerful piece it can, otherwise it moves the best piece to move.
 void Chessboard::MoveAI( Player & ply )
 {
 	bool all_invalid = true;
@@ -373,6 +381,7 @@ void Chessboard::MoveAI( Player & ply )
 	}
 }
 
+//simply determines which type of move function to call
 void Chessboard::Move( Player & ply )
 {
 	if( ply.IsAI() )
@@ -381,6 +390,7 @@ void Chessboard::Move( Player & ply )
 		MoveHuman( ply );
 }
 
+//determines if s1 is the opposite side of s2
 bool IsOpSide( SIDE s1, SIDE s2 )
 {
 	if( s1 == WHITE && s2 == BLACK ) return true;
@@ -388,6 +398,7 @@ bool IsOpSide( SIDE s1, SIDE s2 )
 	else return false;
 }
 
+//returns the type of piece that the passed piece will move onto given the direction and distance
 PIECE Chessboard::PieceMoveResult ( short row, short column, short dist, Card::SPEC dir ) const
 {
 	switch( m_array[row][column].type )
@@ -408,6 +419,7 @@ PIECE Chessboard::PieceMoveResult ( short row, short column, short dist, Card::S
 	}
 }
 
+//determines if a card of a certain side has any valid moves on the board
 bool Chessboard::IsValidMove( SIDE side, const Card & c ) const
 {
 	for( short row = 0; row < 8; ++row )
@@ -425,6 +437,7 @@ bool Chessboard::IsValidMove( SIDE side, const Card & c ) const
 	return false; //if we got here, we never returned true on any of the 'CanMoves', so they all returned false
 }
 
+//queries the user for which piece to move once they select a card
 short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 {
 	short * pos = new short[2]; //this gets deleted by the calling function.
@@ -514,6 +527,7 @@ short * Chessboard::GetPiece( const Card & c, SIDE side ) const
 	return pos; //got a valid array location that holds a piece of the right type and side
 }
 
+//Moves a piece from one location to another based on location, distance, and direction
 void Chessboard::MovePiece( short row, short column, short dist, Card::SPEC dir )
 {
 	if( m_array[row][column].side == BLACK )
@@ -534,6 +548,7 @@ void Chessboard::MovePiece( short row, short column, short dist, Card::SPEC dir 
 	m_array[row][column] = Piece(); //empty square where the piece was
 }
 
+//Determines how far a piece can possibly be moved. Used for 'GetDistance' function that asks the user how many units to move a piece
 short Chessboard::GetPieceMaxDist( short row, short column, Card::SPEC dir ) const
 {
 	switch( m_array[row][column].type )
@@ -550,6 +565,7 @@ short Chessboard::GetPieceMaxDist( short row, short column, Card::SPEC dir ) con
 	}
 }
 
+//Asks the user how many units to move a piece if they have more than 1 choice
 short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
 {
 	short max = GetPieceMaxDist( row, column, dir );
@@ -585,6 +601,7 @@ short Chessboard::GetDistance( short row, short column, Card::SPEC dir ) const
 // Prepare yourself for some gnarly code
 //
 
+//determines how far a rook can move, used for determining max move distance
 short Chessboard::RookMoveDistance( short row, short column, Card::SPEC dir ) const
 {
 	short ret = 1; //we must be able to move atleast one square or we couldn't be here
@@ -601,6 +618,7 @@ short Chessboard::RookMoveDistance( short row, short column, Card::SPEC dir ) co
 	return ret; //literally can never get here but compiler yells at me so whatever
 }
 
+//determines how far a bishop can move, used for determining max move distance
 short Chessboard::BishopMoveDistance( short row, short column, Card::SPEC dir ) const
 {
 	short ret = 1;
@@ -617,6 +635,7 @@ short Chessboard::BishopMoveDistance( short row, short column, Card::SPEC dir ) 
 	return ret;
 }
 
+//determines how far a queen/king can move, used for determining max move distance
 short Chessboard::QueenMoveDistance( short row, short column, Card::SPEC dir ) const
 {
 	switch( dir )
@@ -629,11 +648,13 @@ short Chessboard::QueenMoveDistance( short row, short column, Card::SPEC dir ) c
 	}
 }
 
+//moves a pawn at a certain row and column a certain distance in a certain direction
 void Chessboard::MovePawn( short row, short column, short dist, Card::SPEC dir )
 {
 	MoveQueen( row, column, dist, dir );
 }
 
+//moves a knight at a certain row and column a certain distance in a certain direction
 void Chessboard::MoveKnight( short row, short column, Card::SPEC dir )
 {
 	switch( dir )
@@ -657,6 +678,7 @@ void Chessboard::MoveKnight( short row, short column, Card::SPEC dir )
 	}
 }
 
+//moves a rook at a certain row and column a certain distance in a certain direction
 void Chessboard::MoveRook( short row, short column, short dist, Card::SPEC dir )
 {
 	switch( dir )
@@ -672,6 +694,7 @@ void Chessboard::MoveRook( short row, short column, short dist, Card::SPEC dir )
 	}
 }
 
+//moves a bishop at a certain row and column a certain distance in a certain direction
 void Chessboard::MoveBishop( short row, short column, short dist, Card::SPEC dir )
 {
 	switch( dir )
@@ -687,6 +710,7 @@ void Chessboard::MoveBishop( short row, short column, short dist, Card::SPEC dir
 	}
 }
 
+//moves a queen or king at a certain row and column a certain distance in a certain direction
 void Chessboard::MoveQueen( short row, short column, short dist, Card::SPEC dir )
 {
 	if( dir == Card::N || dir == Card::S || dir == Card::E || dir == Card::W )
@@ -695,6 +719,7 @@ void Chessboard::MoveQueen( short row, short column, short dist, Card::SPEC dir 
 		MoveBishop( row, column, dist, dir );
 }
 
+//returns the PIECE type that a pawn would move onto if it tried to make a move in a certain direction
 PIECE Chessboard::CanMovePawn( short row, short column, short dist, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
@@ -742,6 +767,7 @@ PIECE Chessboard::CanMovePawn( short row, short column, short dist, Card::SPEC d
 	}
 }
 
+//returns the PIECE type that a rook would move onto if it tried to make a move in a certain direction
 PIECE Chessboard::CanMoveRook( short row, short column, short dist, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
@@ -777,6 +803,7 @@ PIECE Chessboard::CanMoveRook( short row, short column, short dist, Card::SPEC d
 	}
 }
 
+//returns the PIECE type that a knight would move onto if it tried to make a move in a certain direction
 PIECE Chessboard::CanMoveKnight( short row, short column, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
@@ -836,6 +863,7 @@ PIECE Chessboard::CanMoveKnight( short row, short column, Card::SPEC dir ) const
 	}
 }
 
+//returns the PIECE type that a bishop would move onto if it tried to make a move in a certain direction
 PIECE Chessboard::CanMoveBishop( short row, short column, short dist, Card::SPEC dir ) const
 {
 	SIDE s = m_array[row][column].side;
@@ -871,6 +899,7 @@ PIECE Chessboard::CanMoveBishop( short row, short column, short dist, Card::SPEC
 	}
 }
 
+//returns the PIECE type that a queen or king would move onto if it tried to make a move in a certain direction
 PIECE Chessboard::CanMoveQueen( short row, short column, short dist, Card::SPEC dir ) const
 {
 	if( dir == Card::N || dir == Card::S || dir == Card::E || dir == Card::W )
