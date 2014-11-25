@@ -1,5 +1,6 @@
 #include "Deck.h"
 
+//turn a string in a card spec
 Card::SPEC Deck::GetSpec( pstring & s )
 {
 	//string to lowercase
@@ -27,6 +28,7 @@ Card::SPEC Deck::GetSpec( pstring & s )
 		return Card::NOSPEC;
 }
 
+//turn a string into a card piece
 PIECE Deck::GetPiece( pstring & s )
 {
 	//string to lowercase
@@ -50,6 +52,7 @@ PIECE Deck::GetPiece( pstring & s )
 		return NOPIECE;
 }
 
+//intitial constructor for deck, pass a fileapth to read the deck from
 Deck::Deck( const pstring & filepath )
 {
 	pstring arg1, arg2;
@@ -66,11 +69,13 @@ Deck::Deck( const pstring & filepath )
 	Shuffle(); // shuffle dat
 }
 
+//just pass a card back and remove it from the top of the deck
 Card Deck::Draw()
 {
 	return m_cards.pop_back(); //remove from array and return card removed
 }
 
+//shuffle a deck
 void Deck::Shuffle()
 {
 	int i = 100;
@@ -85,6 +90,7 @@ void Deck::Shuffle()
 	}
 }
 
+//add the passed card to the deck
 void Deck::AddCard( Card c )
 {
 	//normally I'd inline these but doing this for more readability

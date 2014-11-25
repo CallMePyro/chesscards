@@ -25,13 +25,10 @@ void MainMenu();
 		pstring SelectDeck();
 		void PlayGame( Player & p1, Player & p2 );
 	void AddDeck();
-	void RemoveDeck();
-	void ViewStats();
-
 
 int main()
 {
-	srand( NULL ); //SEED THE RAND!
+	srand( NULL ); //SEED THE RAND! AHHHHHHHHHHHHHHH
 
 	cout << "   _____ _                   " << '\n'
 		 << "  / ____| |                  " << '\n'
@@ -157,7 +154,6 @@ pstring SelectDeck()
 
 void PlayGame( Player & p1, Player & p2 )
 {
-
 	Chessboard cb;
 	while( !cb.GameOver() )
 	{

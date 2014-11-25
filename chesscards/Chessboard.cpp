@@ -54,24 +54,28 @@ char type_tostring( Piece p )
 	return p.side == WHITE ? toupper( center ) : center; //uppercase if white side
 }
 
-char idx_to_row( short idx ) //convert row index to character
+//convert row index to character
+char idx_to_row( short idx )
 {
 	return ( 8 - idx ) + '0';
 }
 
-short row_to_idx( char row ) //character to row index
+//character to row index
+short row_to_idx( char row )
 {
 	return 8 - ( row - '0' );
 }
 
-char idx_to_column( short idx ) //convert column index to character
+//convert column index to character
+char idx_to_column( short idx )
 {
 	if( idx != 7 )
 		return ( ( 8 * idx ) / 7 ) + 'a';
 	else return 'h'; //darn integer division
 }
 
-short column_to_idx( char column ) //convert user input to column index
+//convert user input to column index
+short column_to_idx( char column )
 {
 	return ( ( 7 * column ) / 8 ) - 84;
 }
